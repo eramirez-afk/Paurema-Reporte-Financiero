@@ -3,428 +3,325 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pauream — Reporte Ejecutivo</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<title>Paurema — Reporte Financiero</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a18;padding:20px;}
-.container{max-width:1100px;margin:0 auto;}
-.header{display:flex;align-items:center;justify-content:space-between;padding-bottom:1rem;border-bottom:0.5px solid #d3d1c7;margin-bottom:1.25rem;flex-wrap:wrap;gap:8px;}
-.header h1{font-size:19px;font-weight:500;}
-.header h1 i{font-size:17px;margin-right:6px;color:#185FA5;vertical-align:-2px;}
-.header-right{display:flex;align-items:center;gap:10px;}
-.header span{font-size:12px;color:#5F5E5A;}
-.sync-badge{display:flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid #d3d1c7;color:#5F5E5A;background:#fff;}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:#b4b2a9;}
-.sync-dot.ok{background:#3B6D11;}
-.sync-dot.syncing{background:#BA7517;animation:pulse 1s infinite;}
-.sync-dot.err{background:#A32D2D;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.25rem;}
-.metric{background:#ededeb;border-radius:8px;padding:14px 16px;}
-.metric .label{font-size:12px;color:#5F5E5A;margin-bottom:6px;}
-.metric .value{font-size:21px;font-weight:500;}
-.metric .sub{font-size:11px;color:#888780;margin-top:3px;}
-.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.5rem;}
-.chart-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:1rem;}
-.chart-card .chart-title{font-size:13px;font-weight:500;margin-bottom:10px;}
-.legend{display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
-.legend span{display:flex;align-items:center;gap:4px;font-size:11px;color:#5F5E5A;}
-.section-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
-.section-title{font-size:14px;font-weight:500;color:#5F5E5A;}
-.filters{display:flex;gap:6px;flex-wrap:wrap;}
-.filter-btn{background:transparent;border:0.5px solid #b4b2a9;border-radius:20px;padding:4px 12px;font-size:11px;color:#5F5E5A;cursor:pointer;}
-.filter-btn.active{background:#185FA5;color:white;border-color:#185FA5;}
-.table-wrap{overflow-x:auto;margin-bottom:1.5rem;}
-.ops-table{width:100%;border-collapse:collapse;font-size:12px;}
-.ops-table thead tr{border-bottom:0.5px solid #d3d1c7;}
-.ops-table th{font-size:11px;font-weight:500;color:#5F5E5A;text-align:left;padding:8px 6px;white-space:nowrap;}
-.ops-table td{padding:8px 6px;border-bottom:0.5px solid #ededeb;white-space:nowrap;}
-.ops-table tr:last-child td{border-bottom:none;}
-.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:500;}
-.badge.pagado{background:#EAF3DE;color:#27500A;}
-.badge.pendiente{background:#FAEEDA;color:#633806;}
-.badge.gasto{background:#FCEBEB;color:#791F1F;}
-.del-btn{background:none;border:none;color:#b4b2a9;cursor:pointer;font-size:14px;padding:0 4px;}
-.del-btn:hover{color:#A32D2D;}
-.add-form{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;}
-.form-title{font-size:14px;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
-.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-.form-group{display:flex;flex-direction:column;gap:4px;}
-.form-group label{font-size:11px;color:#5F5E5A;}
-.form-group input,.form-group select{font-size:13px;padding:7px 10px;border:0.5px solid #b4b2a9;border-radius:8px;background:#fff;color:#1a1a18;outline:none;font-family:inherit;}
-.form-group input:focus,.form-group select:focus{border-color:#185FA5;}
-.btn-row{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;}
-.btn-add{padding:8px 20px;background:#185FA5;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;}
-.btn-add:hover{background:#0C447C;}
-.btn-add:disabled{background:#b4b2a9;cursor:not-allowed;}
-.stamp{font-size:10px;color:#888780;text-align:right;margin-top:8px;}
-.mono{font-family:'SF Mono','Consolas',monospace;font-size:11px;}
-.toast{position:fixed;bottom:24px;right:24px;background:#1a1a18;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:999;}
-.toast.show{opacity:1;}
-.loader{text-align:center;padding:40px;color:#888780;font-size:13px;}
-.error-box{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:12px 16px;font-size:13px;color:#791F1F;margin-bottom:1rem;}
-@media(max-width:700px){
-  .metrics{grid-template-columns:repeat(2,1fr);}
-  .charts-row{grid-template-columns:1fr;}
-  .form-grid{grid-template-columns:1fr 1fr;}
-}
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  :root {
+    --navy:#0d1b2a;--navy2:#1a2e45;--gold:#c9a84c;--gold-light:#e8c97a;
+    --white:#f5f7fa;--text:#e2e8f0;--text-muted:#94a3b8;
+    --green:#22c55e;--red:#ef4444;--card-bg:#162032;
+    --border:rgba(201,168,76,0.2);--input-bg:#0f1d2e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:var(--navy);color:var(--text);min-height:100vh}
+  header{background:var(--navy2);border-bottom:2px solid var(--gold);padding:16px 32px;display:flex;align-items:center;justify-content:space-between}
+  .logo{display:flex;align-items:center;gap:12px}
+  .logo-icon{width:42px;height:42px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:var(--navy)}
+  .logo-text h1{font-size:18px;font-weight:700;color:var(--white)}
+  .logo-text p{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+  .sync-badge{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);background:var(--input-bg);padding:6px 14px;border-radius:20px;border:1px solid var(--border)}
+  .sync-dot{width:8px;height:8px;border-radius:50%;background:#94a3b8;transition:background .3s}
+  .sync-dot.ok{background:var(--green)}
+  .sync-dot.saving{background:var(--gold);animation:pulse 1s infinite}
+  .sync-dot.error{background:var(--red)}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  main{max-width:1280px;margin:0 auto;padding:28px 24px}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:28px}
+  .kpi{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:20px 24px;position:relative;overflow:hidden}
+  .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold)}
+  .kpi-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px}
+  .kpi-value{font-size:26px;font-weight:700;color:var(--white)}
+  .kpi-value.green{color:var(--green)}.kpi-value.red{color:var(--red)}.kpi-value.gold{color:var(--gold)}
+  .kpi-sub{font-size:12px;color:var(--text-muted);margin-top:4px}
+  .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px}
+  @media(max-width:768px){.charts-grid{grid-template-columns:1fr}}
+  .chart-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:20px}
+  .chart-title{font-size:13px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px}
+  .chart-wrap{position:relative;height:200px}
+  .section-title{font-size:15px;font-weight:600;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+  .form-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:28px}
+  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:16px}
+  .field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:6px}
+  .field input,.field select{width:100%;padding:10px 14px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--white);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+  .field input:focus,.field select:focus{border-color:var(--gold)}
+  .field select option{background:var(--navy2)}
+  .btn-add{background:var(--gold);color:var(--navy);border:none;padding:11px 28px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;transition:background .2s}
+  .btn-add:hover{background:var(--gold-light)}
+  .table-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .table-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border)}
+  .filter-btns{display:flex;gap:8px}
+  .filter-btn{padding:6px 14px;border-radius:20px;font-size:12px;border:1px solid var(--border);cursor:pointer;background:transparent;color:var(--text-muted);transition:all .2s}
+  .filter-btn.active{background:var(--gold);color:var(--navy);font-weight:600;border-color:var(--gold)}
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse}
+  thead th{background:var(--input-bg);padding:11px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);text-align:left;white-space:nowrap}
+  tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s}
+  tbody tr:hover{background:rgba(201,168,76,.04)}
+  tbody td{padding:11px 16px;font-size:13px;white-space:nowrap}
+  .badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+  .badge.pagado{background:rgba(34,197,94,.15);color:var(--green)}
+  .badge.pendiente{background:rgba(239,68,68,.15);color:var(--red)}
+  .btn-del{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:4px;transition:color .2s}
+  .btn-del:hover{color:var(--red)}
+  .empty-state{text-align:center;padding:48px;color:var(--text-muted);font-size:14px}
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--navy2);border:1px solid var(--gold);color:var(--white);padding:12px 20px;border-radius:10px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:1000}
+  .toast.show{opacity:1;transform:translateY(0)}
+  .token-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:2000}
+  .token-box{background:var(--navy2);border:1px solid var(--gold);border-radius:16px;padding:32px;max-width:460px;width:90%}
+  .token-box h2{color:var(--gold);margin-bottom:12px;font-size:18px}
+  .token-box p{color:var(--text-muted);font-size:13px;margin-bottom:20px;line-height:1.6}
+  .token-box input{width:100%;padding:12px 14px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--white);font-size:14px;margin-bottom:16px;font-family:monospace}
+  .token-box button{background:var(--gold);color:var(--navy);border:none;padding:11px 24px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;width:100%}
 </style>
 </head>
 <body>
-<div class="container">
 
-<div class="header">
-  <h1><i class="ti ti-plane"></i>Pauream — Reporte Ejecutivo</h1>
-  <div class="header-right">
-    <span id="ts"></span>
-    <div class="sync-badge"><span class="sync-dot" id="syncDot"></span><span id="syncTxt">Conectando...</span></div>
+<!-- TOKEN MODAL (solo si no hay token guardado) -->
+<div class="token-modal" id="tokenModal" style="display:none">
+  <div class="token-box">
+    <h2>🔐 Configuración inicial</h2>
+    <p>Para sincronizar datos entre dispositivos, ingresa tu token de GitHub. Este se guarda solo en tu navegador y nunca se comparte.</p>
+    <input type="password" id="tokenInput" placeholder="ghp_...">
+    <button onclick="guardarToken()">Conectar y cargar datos</button>
   </div>
 </div>
 
-<div id="errorBox" style="display:none;" class="error-box"></div>
-<div id="metrics" class="metrics"><div class="loader"><i class="ti ti-loader" style="animation:pulse 1s infinite;"></i> Cargando datos...</div></div>
-
-<div class="charts-row">
-  <div class="chart-card">
-    <div class="chart-title">Facturado por tipo de servicio</div>
-    <div class="legend" id="legend1"></div>
-    <div style="position:relative;height:200px;"><canvas id="chart1" role="img" aria-label="Facturado por tipo de servicio"></canvas></div>
-  </div>
-  <div class="chart-card">
-    <div class="chart-title">Estado de cobro</div>
-    <div class="legend" id="legend2"></div>
-    <div style="position:relative;height:200px;"><canvas id="chart2" role="img" aria-label="Estado de cobro"></canvas></div>
-  </div>
-</div>
-
-<div class="section-row">
-  <div class="section-title">Operaciones registradas</div>
-  <div class="filters">
-    <button class="filter-btn active" onclick="filterOps('todos',this)">Todos</button>
-    <button class="filter-btn" onclick="filterOps('PAGADO',this)">Pagados</button>
-    <button class="filter-btn" onclick="filterOps('PENDIENTE',this)">Pendientes</button>
-    <button class="filter-btn" onclick="filterOps('GASTO',this)">Gastos</button>
-  </div>
-</div>
-
-<div class="table-wrap">
-  <table class="ops-table">
-    <thead><tr>
-      <th>Cliente</th><th>Matrícula</th><th>Servicio</th>
-      <th style="text-align:right;">Gastos</th><th style="text-align:right;">Monto</th>
-      <th style="text-align:right;">Ganancia</th><th>Estado</th><th></th>
-    </tr></thead>
-    <tbody id="opsBody"><tr><td colspan="8" class="loader">Cargando...</td></tr></tbody>
-  </table>
-</div>
-
-<div class="add-form">
-  <div class="form-title"><i class="ti ti-plus"></i>Registrar nueva operación</div>
-  <div class="form-grid">
-    <div class="form-group"><label>Cliente</label><input id="f_cliente" placeholder="Nombre del cliente"></div>
-    <div class="form-group"><label>Matrícula</label><input id="f_matricula" placeholder="Ej. N718JJ"></div>
-    <div class="form-group"><label>Tipo de servicio</label>
-      <select id="f_servicio">
-        <option value="CATERING">Catering</option>
-        <option value="HANDLING SUPERVISION">Handling Supervision</option>
-        <option value="TRANSPORTACION">Transportación</option>
-        <option value="GASTO OPERATIVO">Gasto Operativo</option>
-      </select>
-    </div>
-    <div class="form-group"><label>Gastos ($)</label><input id="f_gastos" type="number" placeholder="0.00"></div>
-    <div class="form-group"><label>Monto facturado ($)</label><input id="f_monto" type="number" placeholder="0.00"></div>
-    <div class="form-group"><label>Estado</label>
-      <select id="f_estado">
-        <option value="PENDIENTE">Pendiente</option>
-        <option value="PAGADO">Pagado</option>
-        <option value="GASTO">Gasto</option>
-      </select>
+<header>
+  <div class="logo">
+    <div class="logo-icon">P</div>
+    <div class="logo-text">
+      <h1>Paurema Ground Handling</h1>
+      <p>Reporte Financiero en Tiempo Real</p>
     </div>
   </div>
-  <div class="btn-row">
-    <button class="btn-add" id="btnAdd" onclick="addOp()"><i class="ti ti-check" style="font-size:13px;margin-right:4px;vertical-align:-1px;"></i>Agregar operación</button>
-    <span style="font-size:11px;color:#888780;" id="addStatus"></span>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="sync-badge">
+      <div class="sync-dot" id="syncDot"></div>
+      <span id="syncLabel">Iniciando...</span>
+    </div>
+    <button onclick="cambiarToken()" style="background:none;border:1px solid var(--border);color:var(--text-muted);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px">⚙️ Token</button>
   </div>
-</div>
+</header>
 
-<div class="stamp" id="stamp"></div>
-</div>
+<main>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Total Facturado</div><div class="kpi-value gold" id="kpiFacturado">$0</div><div class="kpi-sub" id="kpiOps">0 operaciones</div></div>
+    <div class="kpi"><div class="kpi-label">Total Gastos</div><div class="kpi-value red" id="kpiGastos">$0</div><div class="kpi-sub">Costos operativos</div></div>
+    <div class="kpi"><div class="kpi-label">Ganancia Neta</div><div class="kpi-value green" id="kpiGanancia">$0</div><div class="kpi-sub" id="kpiMargen">Margen: 0%</div></div>
+    <div class="kpi"><div class="kpi-label">Por Cobrar</div><div class="kpi-value" id="kpiPendiente" style="color:var(--gold-light)">$0</div><div class="kpi-sub" id="kpiPendienteOps">0 pendientes</div></div>
+  </div>
 
+  <div class="charts-grid">
+    <div class="chart-card"><div class="chart-title">Facturado por Tipo de Servicio</div><div class="chart-wrap"><canvas id="chartServicios"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Cobrado vs Pendiente</div><div class="chart-wrap"><canvas id="chartEstado"></canvas></div></div>
+  </div>
+
+  <div class="section-title">Nueva Operación</div>
+  <div class="form-card">
+    <div class="form-grid">
+      <div class="field"><label>Cliente</label><input type="text" id="fCliente" placeholder="Nombre del cliente"></div>
+      <div class="field"><label>Matrícula / Vuelo</label><input type="text" id="fMatricula" placeholder="XA-XXX / QQE236"></div>
+      <div class="field"><label>Tipo de Servicio</label>
+        <select id="fTipo"><option>Handling</option><option>Catering</option><option>Combustible</option><option>Permisos</option><option>Transporte</option><option>Otro</option></select>
+      </div>
+      <div class="field"><label>Monto Facturado (MXN)</label><input type="number" id="fMonto" placeholder="0.00" step="0.01"></div>
+      <div class="field"><label>Gastos (MXN)</label><input type="number" id="fGastos" placeholder="0.00" step="0.01"></div>
+      <div class="field"><label>Estado</label><select id="fEstado"><option>Pagado</option><option>Pendiente</option></select></div>
+      <div class="field"><label>Fecha</label><input type="date" id="fFecha"></div>
+    </div>
+    <button class="btn-add" onclick="agregarOp()">+ Agregar Operación</button>
+  </div>
+
+  <div class="section-title">Operaciones</div>
+  <div class="table-card">
+    <div class="table-header">
+      <div class="filter-btns">
+        <button class="filter-btn active" onclick="setFiltro('todos',this)">Todos</button>
+        <button class="filter-btn" onclick="setFiltro('Pagado',this)">Pagados</button>
+        <button class="filter-btn" onclick="setFiltro('Pendiente',this)">Pendientes</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table><thead><tr><th>Fecha</th><th>Cliente</th><th>Matrícula/Vuelo</th><th>Servicio</th><th>Facturado</th><th>Gastos</th><th>Ganancia</th><th>Estado</th><th></th></tr></thead>
+      <tbody id="tablaBody"></tbody></table>
+      <div class="empty-state" id="emptyState" style="display:none">No hay operaciones registradas.</div>
+    </div>
+  </div>
+</main>
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-const STORAGE_KEY = 'pauream_ops_v1';
-const SEED = [
-  {id:1,cliente:"MANNY HANDLING SUPPORT",matricula:"N718JJ",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
-  {id:2,cliente:"MANNYS CATERING",matricula:"N890RW",servicio:"CATERING",gastos:39000,monto:68478.23,estado:"PAGADO"},
-  {id:3,cliente:"MANNY HANDLING SUPPORT",matricula:"9HHFK",servicio:"HANDLING SUPERVISION",gastos:0,monto:15400,estado:"PAGADO"},
-  {id:4,cliente:"MANNY HANDLING SUPPORT",matricula:"N358V",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
-  {id:5,cliente:"MANNY HANDLING SUPPORT",matricula:"A7CGB",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
-  {id:6,cliente:"MARZAL COMPANY",matricula:"XA-ASP",servicio:"CATERING",gastos:5100,monto:6888,estado:"PAGADO"},
-  {id:7,cliente:"MANNY HANDLING SUPPORT",matricula:"N225EL",servicio:"HANDLING SUPERVISION",gastos:0,monto:9800,estado:"PAGADO"},
-  {id:8,cliente:"MANNYS CATERING",matricula:"LV-VEG",servicio:"CATERING",gastos:10720,monto:14942.97,estado:"PAGADO"},
-  {id:9,cliente:"MANNYS CATERING",matricula:"DAUSC",servicio:"CATERING",gastos:189565,monto:290170,estado:"PAGADO"},
-  {id:10,cliente:"MANNY HANDLING SUPPORT",matricula:"DAUSC",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
-  {id:11,cliente:"MANNYS CATERING",matricula:"DAUSC",servicio:"TRANSPORTACION",gastos:5000,monto:5000,estado:"PAGADO"},
-  {id:12,cliente:"MANNYS CATERING",matricula:"N616VG",servicio:"CATERING",gastos:6460,monto:14600,estado:"PAGADO"},
-  {id:13,cliente:"MANNY HANDLING SUPPORT",matricula:"N900KG",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
-  {id:14,cliente:"MANNY HANDLING SUPPORT",matricula:"N812NE",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
-  {id:15,cliente:"MANNY HANDLING SUPPORT",matricula:"N812NE",servicio:"CATERING",gastos:2000,monto:2000,estado:"PAGADO"},
-  {id:16,cliente:"MANNY HANDLING SUPPORT",matricula:"N173JM",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
-  {id:17,cliente:"MANNY HANDLING SUPPORT",matricula:"N920MD",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
-  {id:18,cliente:"MANNYS CATERING",matricula:"N420FJ",servicio:"CATERING",gastos:2770.4,monto:5150.4,estado:"PENDIENTE"},
-  {id:19,cliente:"MANNY HANDLING SUPPORT",matricula:"N616VG",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
-  {id:20,cliente:"MANNY HANDLING SUPPORT",matricula:"N969PW",servicio:"HANDLING SUPERVISION",gastos:4900,monto:17000,estado:"PAGADO"},
-  {id:21,cliente:"MANNYS CATERING",matricula:"N969PW",servicio:"CATERING",gastos:2494,monto:4680,estado:"PENDIENTE"},
-  {id:22,cliente:"MANNY HANDLING SUPPORT",matricula:"N989JC",servicio:"HANDLING SUPERVISION",gastos:1900,monto:12400,estado:"PENDIENTE"},
-  {id:23,cliente:"MANNYS CATERING",matricula:"N307HR",servicio:"CATERING",gastos:5675,monto:7450,estado:"PENDIENTE"},
-  {id:24,cliente:"MANNY HANDLING SUPPORT",matricula:"N307HR",servicio:"HANDLING SUPERVISION",gastos:3000,monto:13400,estado:"PENDIENTE"},
-  {id:25,cliente:"MANNY HANDLING SUPPORT",matricula:"N661CH",servicio:"HANDLING SUPERVISION",gastos:3000,monto:13400,estado:"PENDIENTE"},
-  {id:26,cliente:"MANNYS CATERING",matricula:"N661CH",servicio:"CATERING",gastos:19260,monto:16800,estado:"PENDIENTE"},
-  {id:27,cliente:"MANNYS CATERING",matricula:"N313AG",servicio:"CATERING",gastos:14480,monto:26092,estado:"PENDIENTE"},
-  {id:28,cliente:"MANNYS CATERING",matricula:"9HGVB",servicio:"CATERING",gastos:25099,monto:32875,estado:"PENDIENTE"},
-  {id:29,cliente:"MANNY HANDLING SUPPORT",matricula:"N830EM",servicio:"HANDLING SUPERVISION",gastos:16050,monto:40450,estado:"PENDIENTE"},
-  {id:30,cliente:"MANNY HANDLING SUPPORT",matricula:"N723HC",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PENDIENTE"},
-  {id:31,cliente:"MANNY HANDLING SUPPORT",matricula:"A7CGG",servicio:"HANDLING SUPERVISION",gastos:0,monto:16500,estado:"PENDIENTE"},
-  {id:32,cliente:"MANNYS CATERING",matricula:"A7CGG",servicio:"CATERING",gastos:37000,monto:54367,estado:"PENDIENTE"},
-  {id:33,cliente:"GASTOS INTERNOS",matricula:"—",servicio:"GASTO OPERATIVO",gastos:5600,monto:0,estado:"GASTO"},
-  {id:34,cliente:"GASTOS INTERNOS",matricula:"—",servicio:"GASTO OPERATIVO",gastos:32000,monto:0,estado:"GASTO"},
-  {id:35,cliente:"GASTOS INTERNOS",matricula:"—",servicio:"GASTO OPERATIVO",gastos:7129,monto:0,estado:"GASTO"},
-  {id:36,cliente:"GASTOS INTERNOS",matricula:"—",servicio:"GASTO OPERATIVO",gastos:18000,monto:0,estado:"GASTO"},
-  {id:37,cliente:"GASTOS INTERNOS",matricula:"—",servicio:"GASTO OPERATIVO",gastos:14000,monto:0,estado:"GASTO"},
+const REPO='eramirez-afk/Paurema-Reporte-Financiero';
+const DATA_FILE='data.json';
+const API_BASE=`https://api.github.com/repos/${REPO}/contents/${DATA_FILE}`;
+
+const BASE_DATA=[
+  {id:1,fecha:'2024-01-15',cliente:'Manny Handling Support',matricula:'XA-MHS',tipo:'Handling',monto:45000,gastos:18000,estado:'Pagado'},
+  {id:2,fecha:'2024-01-22',cliente:'Mannys Catering',matricula:'XA-CAT',tipo:'Catering',monto:32000,gastos:14500,estado:'Pagado'},
+  {id:3,fecha:'2024-02-03',cliente:'Marzal Company',matricula:'XB-MRZ',tipo:'Handling',monto:67500,gastos:22000,estado:'Pagado'},
+  {id:4,fecha:'2024-02-18',cliente:'Manny Handling Support',matricula:'XA-MH2',tipo:'Permisos',monto:12000,gastos:3500,estado:'Pagado'},
+  {id:5,fecha:'2024-03-05',cliente:'Mannys Catering',matricula:'XA-CT2',tipo:'Catering',monto:28500,gastos:12000,estado:'Pendiente'},
+  {id:6,fecha:'2024-03-19',cliente:'Marzal Company',matricula:'XB-MR2',tipo:'Transporte',monto:15000,gastos:7200,estado:'Pagado'},
+  {id:7,fecha:'2024-04-02',cliente:'Manny Handling Support',matricula:'XA-MH3',tipo:'Handling',monto:89000,gastos:31000,estado:'Pagado'},
+  {id:8,fecha:'2024-04-20',cliente:'Charter VIP',matricula:'N-500VIP',tipo:'Handling',monto:120000,gastos:45000,estado:'Pendiente'},
+  {id:9,fecha:'2024-05-08',cliente:'Marzal Company',matricula:'XB-MR3',tipo:'Catering',monto:41000,gastos:16500,estado:'Pagado'},
+  {id:10,fecha:'2024-05-25',cliente:'Manny Handling Support',matricula:'XA-MH4',tipo:'Combustible',monto:55000,gastos:48000,estado:'Pendiente'}
 ];
 
-let ops = [];
-let nextId = 100;
-let currentFilter = 'todos';
-let chart1, chart2;
-let syncInterval;
+let operaciones=[],fileSHA=null,filtroActual='todos',chartServ,chartEst;
 
-function setSyncStatus(status, text) {
-  const dot = document.getElementById('syncDot');
-  const txt = document.getElementById('syncTxt');
-  dot.className = 'sync-dot ' + status;
-  txt.textContent = text;
+function getToken(){return localStorage.getItem('paurema_gh_token')||'';}
+function setSyncStatus(s,l){document.getElementById('syncDot').className='sync-dot '+s;document.getElementById('syncLabel').textContent=l;}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+const fmt=n=>'$'+Number(n).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+function guardarToken(){
+  const t=document.getElementById('tokenInput').value.trim();
+  if(!t){alert('Ingresa un token válido.');return;}
+  localStorage.setItem('paurema_gh_token',t);
+  document.getElementById('tokenModal').style.display='none';
+  cargarDesdeGitHub();
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+function cambiarToken(){
+  localStorage.removeItem('paurema_gh_token');
+  document.getElementById('tokenInput').value='';
+  document.getElementById('tokenModal').style.display='flex';
 }
 
-function showError(msg) {
-  const b = document.getElementById('errorBox');
-  if(msg) { b.textContent = msg; b.style.display = 'block'; }
-  else { b.style.display = 'none'; }
-}
-
-async function callClaude(payload) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
-      system: `Eres un sistema de base de datos para Pauream. 
-Respondes SOLO con JSON válido, sin texto adicional ni backticks.
-Operaciones disponibles:
-- GET: retorna {"ops": [...array de operaciones...]}
-- SET: guarda operaciones y retorna {"ok": true}
-Usa window.storage para persistir datos con clave "${STORAGE_KEY}".
-Formato de operación: {id, cliente, matricula, servicio, gastos, monto, estado}`,
-      messages: [{ role: 'user', content: JSON.stringify(payload) }]
-    })
-  });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  const data = await res.json();
-  const text = data.content.map(b => b.text || '').join('').trim();
-  return JSON.parse(text.replace(/```json|```/g, '').trim());
-}
-
-async function loadOps() {
-  setSyncStatus('syncing', 'Cargando...');
-  try {
-    const result = await callClaude({ action: 'GET', key: STORAGE_KEY, seed: SEED });
-    if (result.ops && Array.isArray(result.ops)) {
-      ops = result.ops.length > 0 ? result.ops : SEED;
-      nextId = Math.max(...ops.map(o => o.id || 0)) + 1;
-    } else {
-      ops = SEED;
-    }
-    setSyncStatus('ok', 'Sincronizado');
-    showError(null);
-    renderAll();
-  } catch(e) {
-    setSyncStatus('err', 'Sin conexión');
-    // fallback to localStorage
-    const local = localStorage.getItem(STORAGE_KEY);
-    ops = local ? JSON.parse(local) : SEED;
-    nextId = Math.max(...ops.map(o => o.id || 0)) + 1;
-    showError('No se pudo conectar a la nube. Mostrando datos locales. Los cambios se guardarán localmente.');
-    renderAll();
+async function cargarDesdeGitHub(){
+  const token=getToken();
+  if(!token){document.getElementById('tokenModal').style.display='flex';return;}
+  setSyncStatus('saving','Conectando...');
+  try{
+    const r=await fetch(API_BASE,{headers:{Authorization:`token ${token}`,Accept:'application/vnd.github.v3+json'}});
+    if(r.status===404){
+      operaciones=[...BASE_DATA];
+      await guardarEnGitHub();
+    }else if(r.ok){
+      const d=await r.json();
+      fileSHA=d.sha;
+      operaciones=JSON.parse(atob(d.content.replace(/\n/g,'')));
+      setSyncStatus('ok','Sincronizado ✓');
+    }else throw new Error('HTTP '+r.status);
+  }catch(e){
+    setSyncStatus('error','Sin conexión');
+    operaciones=[...BASE_DATA];
+    showToast('⚠️ Sin conexión. Mostrando datos base.');
   }
+  render();
 }
 
-async function saveOps() {
-  // Always save locally first
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(ops));
-  setSyncStatus('syncing', 'Guardando...');
-  try {
-    await callClaude({ action: 'SET', key: STORAGE_KEY, ops });
-    setSyncStatus('ok', 'Sincronizado');
-    showError(null);
-  } catch(e) {
-    setSyncStatus('err', 'Guardado local');
-    showError('Sin conexión a la nube. Los datos están guardados localmente en este dispositivo.');
-  }
+async function guardarEnGitHub(){
+  const token=getToken();
+  if(!token)return;
+  setSyncStatus('saving','Guardando...');
+  const content=btoa(unescape(encodeURIComponent(JSON.stringify(operaciones,null,2))));
+  const body={message:'update data',content};
+  if(fileSHA)body.sha=fileSHA;
+  try{
+    const r=await fetch(API_BASE,{method:'PUT',headers:{Authorization:`token ${token}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(r.ok){const d=await r.json();fileSHA=d.content.sha;setSyncStatus('ok','Guardado ✓');}
+    else throw new Error('HTTP '+r.status);
+  }catch(e){setSyncStatus('error','Error al guardar');showToast('❌ No se pudo guardar.');}
 }
 
-async function pollUpdates() {
-  try {
-    const result = await callClaude({ action: 'GET', key: STORAGE_KEY });
-    if (result.ops && result.ops.length !== ops.length) {
-      ops = result.ops;
-      nextId = Math.max(...ops.map(o => o.id || 0)) + 1;
-      renderAll();
-      showToast('Datos actualizados desde otro dispositivo');
-    }
-    setSyncStatus('ok', 'Sincronizado');
-  } catch(e) {
-    setSyncStatus('err', 'Sin conexión');
-  }
+async function agregarOp(){
+  const cliente=document.getElementById('fCliente').value.trim();
+  const matricula=document.getElementById('fMatricula').value.trim();
+  const tipo=document.getElementById('fTipo').value;
+  const monto=parseFloat(document.getElementById('fMonto').value)||0;
+  const gastos=parseFloat(document.getElementById('fGastos').value)||0;
+  const estado=document.getElementById('fEstado').value;
+  const fecha=document.getElementById('fFecha').value||new Date().toISOString().slice(0,10);
+  if(!cliente||!monto){showToast('⚠️ Cliente y monto son obligatorios.');return;}
+  operaciones.push({id:Date.now(),fecha,cliente,matricula,tipo,monto,gastos,estado});
+  render();
+  await guardarEnGitHub();
+  showToast('✅ Operación guardada en la nube.');
+  ['fCliente','fMatricula','fMonto','fGastos','fFecha'].forEach(id=>document.getElementById(id).value='');
 }
 
-function fmt(n) { return '$' + Math.round(n).toLocaleString('es-MX'); }
-function ganancia(o) { return (o.monto||0) - (o.gastos||0); }
-
-function renderMetrics() {
-  const ingresos = ops.filter(o=>o.estado!=='GASTO').reduce((s,o)=>s+(o.monto||0),0);
-  const gastosTotales = ops.reduce((s,o)=>s+(o.gastos||0),0);
-  const gananciaNeta = ingresos - gastosTotales;
-  const pendiente = ops.filter(o=>o.estado==='PENDIENTE').reduce((s,o)=>s+(o.monto||0),0);
-  const pct = ingresos > 0 ? Math.round((gananciaNeta/ingresos)*100) : 0;
-  document.getElementById('metrics').innerHTML = `
-    <div class="metric"><div class="label">Total facturado</div><div class="value" style="color:#185FA5;">${fmt(ingresos)}</div><div class="sub">${ops.filter(o=>o.estado!=='GASTO').length} operaciones</div></div>
-    <div class="metric"><div class="label">Gastos totales</div><div class="value" style="color:#A32D2D;">${fmt(gastosTotales)}</div><div class="sub">Proveedores + operativos</div></div>
-    <div class="metric"><div class="label">Ganancia neta</div><div class="value" style="color:${gananciaNeta>=0?'#3B6D11':'#A32D2D'};">${fmt(gananciaNeta)}</div><div class="sub">Margen ${pct}%</div></div>
-    <div class="metric"><div class="label">Por cobrar</div><div class="value" style="color:#854F0B;">${fmt(pendiente)}</div><div class="sub">${ops.filter(o=>o.estado==='PENDIENTE').length} pendientes</div></div>
-  `;
+async function eliminarOp(id){
+  if(!confirm('¿Eliminar esta operación?'))return;
+  operaciones=operaciones.filter(o=>o.id!==id);
+  render();
+  await guardarEnGitHub();
+  showToast('🗑️ Operación eliminada.');
 }
 
-function renderCharts() {
-  const byService = {};
-  ops.filter(o=>o.estado!=='GASTO').forEach(o=>{ byService[o.servicio]=(byService[o.servicio]||0)+(o.monto||0); });
-  const svLabels = Object.keys(byService);
-  const svData = svLabels.map(k=>Math.round(byService[k]));
-  const colors1 = ['#185FA5','#1D9E75','#BA7517','#D4537E','#533AB7'];
+function setFiltro(f,btn){
+  filtroActual=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTabla();
+}
 
-  if(chart1) chart1.destroy();
-  chart1 = new Chart(document.getElementById('chart1').getContext('2d'), {
+function render(){renderKPIs();renderCharts();renderTabla();}
+
+function renderKPIs(){
+  const f=operaciones.reduce((s,o)=>s+o.monto,0);
+  const g=operaciones.reduce((s,o)=>s+o.gastos,0);
+  const n=f-g;
+  const m=f?((n/f)*100).toFixed(1):0;
+  const pOps=operaciones.filter(o=>o.estado==='Pendiente');
+  const pM=pOps.reduce((s,o)=>s+o.monto,0);
+  document.getElementById('kpiFacturado').textContent=fmt(f);
+  document.getElementById('kpiOps').textContent=operaciones.length+' operaciones';
+  document.getElementById('kpiGastos').textContent=fmt(g);
+  document.getElementById('kpiGanancia').textContent=fmt(n);
+  document.getElementById('kpiMargen').textContent=`Margen: ${m}%`;
+  document.getElementById('kpiPendiente').textContent=fmt(pM);
+  document.getElementById('kpiPendienteOps').textContent=pOps.length+' pendientes';
+}
+
+function renderCharts(){
+  const sv={};
+  operaciones.forEach(o=>{sv[o.tipo]=(sv[o.tipo]||0)+o.monto;});
+  if(chartServ)chartServ.destroy();
+  chartServ=new Chart(document.getElementById('chartServicios'),{
     type:'bar',
-    data:{ labels:svLabels, datasets:[{ data:svData, backgroundColor:colors1.slice(0,svLabels.length), borderRadius:4 }] },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx=>'$'+Math.round(ctx.parsed.y).toLocaleString('es-MX') }}},
-      scales:{ y:{ ticks:{ callback:v=>'$'+Math.round(v/1000)+'k' }, grid:{color:'rgba(0,0,0,0.05)'} }, x:{grid:{display:false}} }
-    }
+    data:{labels:Object.keys(sv),datasets:[{data:Object.values(sv),backgroundColor:'#c9a84c',borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{ticks:{color:'#94a3b8',font:{size:11}},grid:{color:'rgba(255,255,255,0.04)'}},
+              y:{ticks:{color:'#94a3b8',font:{size:11},callback:v=>'$'+(v/1000)+'k'},grid:{color:'rgba(255,255,255,0.06)'}}}}
   });
-  document.getElementById('legend1').innerHTML = svLabels.map((l,i)=>`<span><span style="width:10px;height:10px;border-radius:2px;background:${colors1[i]||'#888'};display:inline-block;"></span> ${l}</span>`).join('');
-
-  const pagado = ops.filter(o=>o.estado==='PAGADO').reduce((s,o)=>s+(o.monto||0),0);
-  const pendiente = ops.filter(o=>o.estado==='PENDIENTE').reduce((s,o)=>s+(o.monto||0),0);
-  if(chart2) chart2.destroy();
-  chart2 = new Chart(document.getElementById('chart2').getContext('2d'), {
+  const pg=operaciones.filter(o=>o.estado==='Pagado').reduce((s,o)=>s+o.monto,0);
+  const pe=operaciones.filter(o=>o.estado==='Pendiente').reduce((s,o)=>s+o.monto,0);
+  if(chartEst)chartEst.destroy();
+  chartEst=new Chart(document.getElementById('chartEstado'),{
     type:'doughnut',
-    data:{ labels:['Pagado','Pendiente'], datasets:[{ data:[Math.round(pagado),Math.round(pendiente)], backgroundColor:['#3B6D11','#BA7517'], borderWidth:0 }] },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx=>'$'+Math.round(ctx.parsed).toLocaleString('es-MX') }}},
-      cutout:'65%'
-    }
+    data:{labels:['Cobrado','Pendiente'],datasets:[{data:[pg,pe],backgroundColor:['#22c55e','#ef4444'],borderWidth:0,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
+      plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:12},padding:16}}}}
   });
-  const total2 = pagado+pendiente;
-  const pct2 = total2>0?Math.round((pagado/total2)*100):0;
-  document.getElementById('legend2').innerHTML = `
-    <span><span style="width:10px;height:10px;border-radius:2px;background:#3B6D11;display:inline-block;"></span> Pagado ${pct2}%</span>
-    <span><span style="width:10px;height:10px;border-radius:2px;background:#BA7517;display:inline-block;"></span> Pendiente ${100-pct2}%</span>
-  `;
 }
 
-function renderTable() {
-  let filtered = currentFilter==='todos' ? ops : ops.filter(o=>o.estado===currentFilter);
-  const tbody = document.getElementById('opsBody');
-  if(!filtered.length) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:#888;padding:20px;">Sin operaciones</td></tr>'; return; }
-  tbody.innerHTML = filtered.slice().reverse().map(o=>{
-    const g = ganancia(o);
-    const bc = o.estado==='PAGADO'?'pagado':o.estado==='PENDIENTE'?'pendiente':'gasto';
-    return `<tr>
-      <td style="font-weight:500;">${o.cliente}</td>
-      <td class="mono">${o.matricula}</td>
-      <td>${o.servicio}</td>
-      <td style="text-align:right;color:#5F5E5A;">${o.gastos?fmt(o.gastos):'—'}</td>
-      <td style="text-align:right;">${o.monto?fmt(o.monto):'—'}</td>
-      <td style="text-align:right;color:${g>=0?'#3B6D11':'#A32D2D'};">${fmt(g)}</td>
-      <td><span class="badge ${bc}">${o.estado}</span></td>
-      <td><button class="del-btn" onclick="deleteOp(${o.id})" title="Eliminar"><i class="ti ti-trash"></i></button></td>
-    </tr>`;
+function renderTabla(){
+  const f=filtroActual==='todos'?operaciones:operaciones.filter(o=>o.estado===filtroActual);
+  const tbody=document.getElementById('tablaBody');
+  const empty=document.getElementById('emptyState');
+  if(!f.length){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  const sorted=[...f].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
+  tbody.innerHTML=sorted.map(o=>{
+    const g=o.monto-o.gastos;
+    return `<tr><td>${o.fecha}</td><td>${o.cliente}</td><td>${o.matricula||'—'}</td><td>${o.tipo}</td><td>${fmt(o.monto)}</td><td>${fmt(o.gastos)}</td>
+    <td style="color:${g>=0?'var(--green)':'var(--red)'};font-weight:600">${fmt(g)}</td>
+    <td><span class="badge ${o.estado.toLowerCase()}">${o.estado}</span></td>
+    <td><button class="btn-del" onclick="eliminarOp(${o.id})">✕</button></td></tr>`;
   }).join('');
 }
 
-function filterOps(f, btn) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderTable();
-}
-
-async function addOp() {
-  const cliente = document.getElementById('f_cliente').value.trim().toUpperCase();
-  const matricula = document.getElementById('f_matricula').value.trim().toUpperCase();
-  const servicio = document.getElementById('f_servicio').value;
-  const gastos = parseFloat(document.getElementById('f_gastos').value)||0;
-  const monto = parseFloat(document.getElementById('f_monto').value)||0;
-  const estado = document.getElementById('f_estado').value;
-  if(!cliente||!matricula){ showToast('⚠ Ingresa cliente y matrícula'); return; }
-
-  const btn = document.getElementById('btnAdd');
-  btn.disabled = true;
-  document.getElementById('addStatus').textContent = 'Guardando...';
-
-  ops.push({id:nextId++, cliente, matricula, servicio, gastos, monto, estado});
-  ['f_cliente','f_matricula','f_gastos','f_monto'].forEach(id=>document.getElementById(id).value='');
-  renderAll();
-  showToast('Operación agregada');
-
-  await saveOps();
-  btn.disabled = false;
-  document.getElementById('addStatus').textContent = '';
-}
-
-async function deleteOp(id) {
-  if(!confirm('¿Eliminar esta operación?')) return;
-  ops = ops.filter(o=>o.id!==id);
-  renderAll();
-  await saveOps();
-  showToast('Operación eliminada');
-}
-
-function renderAll() {
-  renderMetrics();
-  renderCharts();
-  renderTable();
-  document.getElementById('stamp').textContent = 'Actualizado: ' + new Date().toLocaleString('es-MX');
-}
-
-// Init
-document.getElementById('ts').textContent = new Date().toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-loadOps();
-
-// Poll for updates every 30 seconds
-syncInterval = setInterval(pollUpdates, 30000);
+document.getElementById('fFecha').valueAsDate=new Date();
+cargarDesdeGitHub();
+setInterval(async()=>{
+  const token=getToken();if(!token)return;
+  try{const r=await fetch(API_BASE,{headers:{Authorization:`token ${token}`,Accept:'application/vnd.github.v3+json'}});
+    if(r.ok){const d=await r.json();if(d.sha!==fileSHA){fileSHA=d.sha;operaciones=JSON.parse(atob(d.content.replace(/\n/g,'')));render();setSyncStatus('ok','Actualizado ✓');}}}catch(e){}
+},60000);
 </script>
 </body>
 </html>
