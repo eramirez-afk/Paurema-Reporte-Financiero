@@ -8,7 +8,8 @@
     "monto": 8000.0,
     "gastos": 0.0,
     "estado": "PAGADO",
-    "factura": "1044"
+    "factura": "1044",
+    "categoria": "operacion"
   },
   {
     "id": 2,
@@ -19,7 +20,8 @@
     "monto": 68478.23,
     "gastos": 39000.0,
     "estado": "PAGADO",
-    "factura": "1045"
+    "factura": "1045",
+    "categoria": "operacion"
   },
   {
     "id": 3,
@@ -30,7 +32,8 @@
     "monto": 15400.0,
     "gastos": 0.0,
     "estado": "PAGADO",
-    "factura": "1048"
+    "factura": "1048",
+    "categoria": "operacion"
   },
   {
     "id": 4,
@@ -41,7 +44,8 @@
     "monto": 8000.0,
     "gastos": 0.0,
     "estado": "PAGADO",
-    "factura": "1047"
+    "factura": "1047",
+    "categoria": "operacion"
   },
   {
     "id": 5,
@@ -52,7 +56,8 @@
     "monto": 8000.0,
     "gastos": 0.0,
     "estado": "PAGADO",
-    "factura": "1049"
+    "factura": "1049",
+    "categoria": "operacion"
   },
   {
     "id": 6,
@@ -63,7 +68,8 @@
     "monto": 6888.0,
     "gastos": 5100.0,
     "estado": "PAGADO",
-    "factura": "1050"
+    "factura": "1050",
+    "categoria": "operacion"
   },
   {
     "id": 7,
@@ -74,7 +80,8 @@
     "monto": 9800.0,
     "gastos": 0.0,
     "estado": "PAGADO",
-    "factura": "1051"
+    "factura": "1051",
+    "categoria": "operacion"
   },
   {
     "id": 8,
@@ -85,7 +92,8 @@
     "monto": 14942.97,
     "gastos": 10720.0,
     "estado": "PAGADO",
-    "factura": "1052"
+    "factura": "1052",
+    "categoria": "operacion"
   },
   {
     "id": 9,
@@ -96,7 +104,8 @@
     "monto": 290170.0,
     "gastos": 189565.0,
     "estado": "PAGADO",
-    "factura": "1056"
+    "factura": "1056",
+    "categoria": "operacion"
   },
   {
     "id": 10,
@@ -107,7 +116,8 @@
     "monto": 8000.0,
     "gastos": 0.0,
     "estado": "PAGADO",
-    "factura": "1053"
+    "factura": "1053",
+    "categoria": "operacion"
   },
   {
     "id": 11,
@@ -118,7 +128,8 @@
     "monto": 5000.0,
     "gastos": 5000.0,
     "estado": "PAGADO",
-    "factura": "1057"
+    "factura": "1057",
+    "categoria": "operacion"
   },
   {
     "id": 12,
@@ -129,7 +140,8 @@
     "monto": 14600.0,
     "gastos": 6460.0,
     "estado": "PAGADO",
-    "factura": "1058"
+    "factura": "1058",
+    "categoria": "operacion"
   },
   {
     "id": 13,
@@ -140,7 +152,8 @@
     "monto": 8000.0,
     "gastos": 0.0,
     "estado": "PAGADO",
-    "factura": "1059"
+    "factura": "1059",
+    "categoria": "operacion"
   },
   {
     "id": 19,
@@ -151,7 +164,8 @@
     "monto": 8000.0,
     "gastos": 0.0,
     "estado": "PAGADO",
-    "factura": "1060"
+    "factura": "1060",
+    "categoria": "operacion"
   },
   {
     "id": 20,
@@ -162,7 +176,8 @@
     "monto": 2000.0,
     "gastos": 2000.0,
     "estado": "PAGADO",
-    "factura": "1061"
+    "factura": "1061",
+    "categoria": "operacion"
   },
   {
     "id": 21,
@@ -173,7 +188,8 @@
     "monto": 8000.0,
     "gastos": 0.0,
     "estado": "PAGADO",
-    "factura": "1062"
+    "factura": "1062",
+    "categoria": "operacion"
   },
   {
     "id": 22,
@@ -184,7 +200,8 @@
     "monto": 8000.0,
     "gastos": 0.0,
     "estado": "PAGADO",
-    "factura": "1065"
+    "factura": "1065",
+    "categoria": "operacion"
   },
   {
     "id": 24,
@@ -195,7 +212,8 @@
     "monto": 5150.4,
     "gastos": 2770.4,
     "estado": "PENDIENTE",
-    "factura": "1068"
+    "factura": "1068",
+    "categoria": "operacion"
   },
   {
     "id": 25,
@@ -206,7 +224,8 @@
     "monto": 8000.0,
     "gastos": 0.0,
     "estado": "PAGADO",
-    "factura": "1069"
+    "factura": "1069",
+    "categoria": "operacion"
   },
   {
     "id": 26,
@@ -217,7 +236,8 @@
     "monto": 17000.0,
     "gastos": 4900.0,
     "estado": "PAGADO",
-    "factura": "1071"
+    "factura": "1071",
+    "categoria": "operacion"
   },
   {
     "id": 27,
@@ -228,7 +248,8 @@
     "monto": 4680.0,
     "gastos": 2494.0,
     "estado": "PENDIENTE",
-    "factura": "1072"
+    "factura": "1072",
+    "categoria": "operacion"
   },
   {
     "id": 28,
@@ -239,7 +260,8 @@
     "monto": 12400.0,
     "gastos": 1900.0,
     "estado": "PENDIENTE",
-    "factura": "1073"
+    "factura": "1073",
+    "categoria": "operacion"
   },
   {
     "id": 29,
@@ -250,7 +272,8 @@
     "monto": 7450.0,
     "gastos": 5675.0,
     "estado": "PENDIENTE",
-    "factura": "1082"
+    "factura": "1082",
+    "categoria": "operacion"
   },
   {
     "id": 30,
@@ -261,7 +284,8 @@
     "monto": 13400.0,
     "gastos": 3000.0,
     "estado": "PENDIENTE",
-    "factura": "1074"
+    "factura": "1074",
+    "categoria": "operacion"
   },
   {
     "id": 31,
@@ -272,7 +296,8 @@
     "monto": 13400.0,
     "gastos": 3000.0,
     "estado": "PENDIENTE",
-    "factura": "1076"
+    "factura": "1076",
+    "categoria": "operacion"
   },
   {
     "id": 32,
@@ -283,7 +308,8 @@
     "monto": 16800.0,
     "gastos": 19260.0,
     "estado": "PENDIENTE",
-    "factura": "1078 /1079"
+    "factura": "1078 /1079",
+    "categoria": "operacion"
   },
   {
     "id": 33,
@@ -294,7 +320,8 @@
     "monto": 26092.0,
     "gastos": 14480.0,
     "estado": "PENDIENTE",
-    "factura": "1081"
+    "factura": "1081",
+    "categoria": "operacion"
   },
   {
     "id": 34,
@@ -305,7 +332,8 @@
     "monto": 32875.0,
     "gastos": 25099.0,
     "estado": "PENDIENTE",
-    "factura": "1080"
+    "factura": "1080",
+    "categoria": "operacion"
   },
   {
     "id": 35,
@@ -316,7 +344,8 @@
     "monto": 40450.0,
     "gastos": 16050.0,
     "estado": "PENDIENTE",
-    "factura": "1090"
+    "factura": "1090",
+    "categoria": "operacion"
   },
   {
     "id": 36,
@@ -327,7 +356,8 @@
     "monto": 8000.0,
     "gastos": 0.0,
     "estado": "PENDIENTE",
-    "factura": "1083"
+    "factura": "1083",
+    "categoria": "operacion"
   },
   {
     "id": 37,
@@ -338,7 +368,8 @@
     "monto": 16500.0,
     "gastos": 0.0,
     "estado": "PENDIENTE",
-    "factura": "1086"
+    "factura": "1086",
+    "categoria": "operacion"
   },
   {
     "id": 38,
@@ -349,6 +380,67 @@
     "monto": 54367.0,
     "gastos": 37000.0,
     "estado": "PENDIENTE",
-    "factura": "1088/1089"
+    "factura": "1088/1089",
+    "categoria": "operacion"
+  },
+  {
+    "id": 1013,
+    "fecha": "",
+    "cliente": "LAPTOP",
+    "matricula": "",
+    "tipo": "GASTO OPERATIVO",
+    "monto": 0.0,
+    "gastos": 5600.0,
+    "estado": "PAGADO",
+    "factura": "",
+    "categoria": "gasto_operativo"
+  },
+  {
+    "id": 1014,
+    "fecha": "",
+    "cliente": "LONA",
+    "matricula": "",
+    "tipo": "GASTO OPERATIVO",
+    "monto": 0.0,
+    "gastos": 32000.0,
+    "estado": "PAGADO",
+    "factura": "",
+    "categoria": "gasto_operativo"
+  },
+  {
+    "id": 1015,
+    "fecha": "",
+    "cliente": "HOT LUNCH, PROPINAS",
+    "matricula": "DAUSC",
+    "tipo": "GASTO OPERATIVO",
+    "monto": 0.0,
+    "gastos": 7129.0,
+    "estado": "PAGADO",
+    "factura": "",
+    "categoria": "gasto_operativo"
+  },
+  {
+    "id": 1016,
+    "fecha": "",
+    "cliente": "SALARIO (EDSON)",
+    "matricula": "",
+    "tipo": "GASTO OPERATIVO",
+    "monto": 0.0,
+    "gastos": 18000.0,
+    "estado": "PAGADO",
+    "factura": "",
+    "categoria": "gasto_operativo"
+  },
+  {
+    "id": 1017,
+    "fecha": "",
+    "cliente": "CELULAR",
+    "matricula": "",
+    "tipo": "GASTO OPERATIVO",
+    "monto": 0.0,
+    "gastos": 14000.0,
+    "estado": "PAGADO",
+    "factura": "",
+    "categoria": "gasto_operativo"
   }
 ]
