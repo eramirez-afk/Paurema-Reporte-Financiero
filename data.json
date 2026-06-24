@@ -1,0 +1,102 @@
+[
+  {
+    "id": 1,
+    "fecha": "2024-01-15",
+    "cliente": "Manny Handling Support",
+    "matricula": "XA-MHS",
+    "tipo": "Handling",
+    "monto": 45000,
+    "gastos": 18000,
+    "estado": "Pagado"
+  },
+  {
+    "id": 2,
+    "fecha": "2024-01-22",
+    "cliente": "Mannys Catering",
+    "matricula": "XA-CAT",
+    "tipo": "Catering",
+    "monto": 32000,
+    "gastos": 14500,
+    "estado": "Pagado"
+  },
+  {
+    "id": 3,
+    "fecha": "2024-02-03",
+    "cliente": "Marzal Company",
+    "matricula": "XB-MRZ",
+    "tipo": "Handling",
+    "monto": 67500,
+    "gastos": 22000,
+    "estado": "Pagado"
+  },
+  {
+    "id": 4,
+    "fecha": "2024-02-18",
+    "cliente": "Manny Handling Support",
+    "matricula": "XA-MH2",
+    "tipo": "Permisos",
+    "monto": 12000,
+    "gastos": 3500,
+    "estado": "Pagado"
+  },
+  {
+    "id": 5,
+    "fecha": "2024-03-05",
+    "cliente": "Mannys Catering",
+    "matricula": "XA-CT2",
+    "tipo": "Catering",
+    "monto": 28500,
+    "gastos": 12000,
+    "estado": "Pendiente"
+  },
+  {
+    "id": 6,
+    "fecha": "2024-03-19",
+    "cliente": "Marzal Company",
+    "matricula": "XB-MR2",
+    "tipo": "Transporte",
+    "monto": 15000,
+    "gastos": 7200,
+    "estado": "Pagado"
+  },
+  {
+    "id": 7,
+    "fecha": "2024-04-02",
+    "cliente": "Manny Handling Support",
+    "matricula": "XA-MH3",
+    "tipo": "Handling",
+    "monto": 89000,
+    "gastos": 31000,
+    "estado": "Pagado"
+  },
+  {
+    "id": 8,
+    "fecha": "2024-04-20",
+    "cliente": "Charter VIP",
+    "matricula": "N-500VIP",
+    "tipo": "Handling",
+    "monto": 120000,
+    "gastos": 45000,
+    "estado": "Pendiente"
+  },
+  {
+    "id": 9,
+    "fecha": "2024-05-08",
+    "cliente": "Marzal Company",
+    "matricula": "XB-MR3",
+    "tipo": "Catering",
+    "monto": 41000,
+    "gastos": 16500,
+    "estado": "Pagado"
+  },
+  {
+    "id": 10,
+    "fecha": "2024-05-25",
+    "cliente": "Manny Handling Support",
+    "matricula": "XA-MH4",
+    "tipo": "Combustible",
+    "monto": 55000,
+    "gastos": 48000,
+    "estado": "Pendiente"
+  }
+]
