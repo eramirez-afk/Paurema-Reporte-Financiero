@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pauream — Reporte Ejecutivo</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a18;padding:20px;}
+.container{max-width:1100px;margin:0 auto;}
+.header{display:flex;align-items:center;justify-content:space-between;padding-bottom:1rem;border-bottom:0.5px solid #d3d1c7;margin-bottom:1.25rem;flex-wrap:wrap;gap:8px;}
+.header h1{font-size:19px;font-weight:500;}
+.header h1 i{font-size:17px;margin-right:6px;color:#185FA5;vertical-align:-2px;}
+.header-right{display:flex;align-items:center;gap:10px;}
+.header span{font-size:12px;color:#5F5E5A;}
+.sync-badge{display:flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid #d3d1c7;color:#5F5E5A;background:#fff;}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#b4b2a9;}
+.sync-dot.ok{background:#3B6D11;}
+.sync-dot.syncing{background:#BA7517;animation:pulse 1s infinite;}
+.sync-dot.err{background:#A32D2D;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.25rem;}
+.metric{background:#ededeb;border-radius:8px;padding:14px 16px;}
+.metric .label{font-size:12px;color:#5F5E5A;margin-bottom:6px;}
+.metric .value{font-size:21px;font-weight:500;}
+.metric .sub{font-size:11px;color:#888780;margin-top:3px;}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.5rem;}
+.chart-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:1rem;}
+.chart-card .chart-title{font-size:13px;font-weight:500;margin-bottom:10px;}
+.legend{display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+.legend span{display:flex;align-items:center;gap:4px;font-size:11px;color:#5F5E5A;}
+.section-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.section-title{font-size:14px;font-weight:500;color:#5F5E5A;}
+.filters{display:flex;gap:6px;flex-wrap:wrap;}
+.filter-btn{background:transparent;border:0.5px solid #b4b2a9;border-radius:20px;padding:4px 12px;font-size:11px;color:#5F5E5A;cursor:pointer;}
+.filter-btn.active{background:#185FA5;color:white;border-color:#185FA5;}
+.table-wrap{overflow-x:auto;margin-bottom:1.5rem;}
+.ops-table{width:100%;border-collapse:collapse;font-size:12px;}
+.ops-table thead tr{border-bottom:0.5px solid #d3d1c7;}
+.ops-table th{font-size:11px;font-weight:500;color:#5F5E5A;text-align:left;padding:8px 6px;white-space:nowrap;}
+.ops-table td{padding:8px 6px;border-bottom:0.5px solid #ededeb;white-space:nowrap;}
+.ops-table tr:last-child td{border-bottom:none;}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:500;}
+.badge.pagado{background:#EAF3DE;color:#27500A;}
+.badge.pendiente{background:#FAEEDA;color:#633806;}
+.badge.gasto{background:#FCEBEB;color:#791F1F;}
+.del-btn{background:none;border:none;color:#b4b2a9;cursor:pointer;font-size:14px;padding:0 4px;}
+.del-btn:hover{color:#A32D2D;}
+.add-form{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;}
+.form-title{font-size:14px;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.form-group{display:flex;flex-direction:column;gap:4px;}
+.form-group label{font-size:11px;color:#5F5E5A;}
+.form-group input,.form-group select{font-size:13px;padding:7px 10px;border:0.5px solid #b4b2a9;border-radius:8px;background:#fff;color:#1a1a18;outline:none;font-family:inherit;}
+.form-group input:focus,.form-group select:focus{border-color:#185FA5;}
+.btn-row{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;}
+.btn-add{padding:8px 20px;background:#185FA5;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;}
+.btn-add:hover{background:#0C447C;}
+.btn-add:disabled{background:#b4b2a9;cursor:not-allowed;}
+.stamp{font-size:10px;color:#888780;text-align:right;margin-top:8px;}
+.mono{font-family:'SF Mono','Consolas',monospace;font-size:11px;}
+.toast{position:fixed;bottom:24px;right:24px;background:#1a1a18;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:999;}
+.toast.show{opacity:1;}
+.loader{text-align:center;padding:40px;color:#888780;font-size:13px;}
+.error-box{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:12px 16px;font-size:13px;color:#791F1F;margin-bottom:1rem;}
+@media(max-width:700px){
+  .metrics{grid-template-columns:repeat(2,1fr);}
+  .charts-row{grid-template-columns:1fr;}
+  .form-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <h1><i class="ti ti-plane"></i>Pauream — Reporte Ejecutivo</h1>
+  <div class="header-right">
+    <span id="ts"></span>
+    <div class="sync-badge"><span class="sync-dot" id="syncDot"></span><span id="syncTxt">Conectando...</span></div>
+  </div>
+</div>
+
+<div id="errorBox" style="display:none;" class="error-box"></div>
+<div id="metrics" class="metrics"><div class="loader"><i class="ti ti-loader" style="animation:pulse 1s infinite;"></i> Cargando datos...</div></div>
+
+<div class="charts-row">
+  <div class="chart-card">
+    <div class="chart-title">Facturado por tipo de servicio</div>
+    <div class="legend" id="legend1"></div>
+    <div style="position:relative;height:200px;"><canvas id="chart1" role="img" aria-label="Facturado por tipo de servicio"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Estado de cobro</div>
+    <div class="legend" id="legend2"></div>
+    <div style="position:relative;height:200px;"><canvas id="chart2" role="img" aria-label="Estado de cobro"></canvas></div>
+  </div>
+</div>
+
+<div class="section-row">
+  <div class="section-title">Operaciones registradas</div>
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterOps('todos',this)">Todos</button>
+    <button class="filter-btn" onclick="filterOps('PAGADO',this)">Pagados</button>
+    <button class="filter-btn" onclick="filterOps('PENDIENTE',this)">Pendientes</button>
+    <button class="filter-btn" onclick="filterOps('GASTO',this)">Gastos</button>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <table class="ops-table">
+    <thead><tr>
+      <th>Cliente</th><th>Matrícula</th><th>Servicio</th>
+      <th style="text-align:right;">Gastos</th><th style="text-align:right;">Monto</th>
+      <th style="text-align:right;">Ganancia</th><th>Estado</th><th></th>
+    </tr></thead>
+    <tbody id="opsBody"><tr><td colspan="8" class="loader">Cargando...</td></tr></tbody>
+  </table>
+</div>
+
+<div class="add-form">
+  <div class="form-title"><i class="ti ti-plus"></i>Registrar nueva operación</div>
+  <div class="form-grid">
+    <div class="form-group"><label>Cliente</label><input id="f_cliente" placeholder="Nombre del cliente"></div>
+    <div class="form-group"><label>Matrícula</label><input id="f_matricula" placeholder="Ej. N718JJ"></div>
+    <div class="form-group"><label>Tipo de servicio</label>
+      <select id="f_servicio">
+        <option value="CATERING">Catering</option>
+        <option value="HANDLING SUPERVISION">Handling Supervision</option>
+        <option value="TRANSPORTACION">Transportación</option>
+        <option value="GASTO OPERATIVO">Gasto Operativo</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Gastos ($)</label><input id="f_gastos" type="number" placeholder="0.00"></div>
+    <div class="form-group"><label>Monto facturado ($)</label><input id="f_monto" type="number" placeholder="0.00"></div>
+    <div class="form-group"><label>Estado</label>
+      <select id="f_estado">
+        <option value="PENDIENTE">Pendiente</option>
+        <option value="PAGADO">Pagado</option>
+        <option value="GASTO">Gasto</option>
+      </select>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn-add" id="btnAdd" onclick="addOp()"><i class="ti ti-check" style="font-size:13px;margin-right:4px;vertical-align:-1px;"></i>Agregar operación</button>
+    <span style="font-size:11px;color:#888780;" id="addStatus"></span>
+  </div>
+</div>
+
+<div class="stamp" id="stamp"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const STORAGE_KEY = 'pauream_ops_v1';
+const SEED = [
+  {id:1,cliente:"MANNY HANDLING SUPPORT",matricula:"N718JJ",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
+  {id:2,cliente:"MANNYS CATERING",matricula:"N890RW",servicio:"CATERING",gastos:39000,monto:68478.23,estado:"PAGADO"},
+  {id:3,cliente:"MANNY HANDLING SUPPORT",matricula:"9HHFK",servicio:"HANDLING SUPERVISION",gastos:0,monto:15400,estado:"PAGADO"},
+  {id:4,cliente:"MANNY HANDLING SUPPORT",matricula:"N358V",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
+  {id:5,cliente:"MANNY HANDLING SUPPORT",matricula:"A7CGB",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
+  {id:6,cliente:"MARZAL COMPANY",matricula:"XA-ASP",servicio:"CATERING",gastos:5100,monto:6888,estado:"PAGADO"},
+  {id:7,cliente:"MANNY HANDLING SUPPORT",matricula:"N225EL",servicio:"HANDLING SUPERVISION",gastos:0,monto:9800,estado:"PAGADO"},
+  {id:8,cliente:"MANNYS CATERING",matricula:"LV-VEG",servicio:"CATERING",gastos:10720,monto:14942.97,estado:"PAGADO"},
+  {id:9,cliente:"MANNYS CATERING",matricula:"DAUSC",servicio:"CATERING",gastos:189565,monto:290170,estado:"PAGADO"},
+  {id:10,cliente:"MANNY HANDLING SUPPORT",matricula:"DAUSC",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
+  {id:11,cliente:"MANNYS CATERING",matricula:"DAUSC",servicio:"TRANSPORTACION",gastos:5000,monto:5000,estado:"PAGADO"},
+  {id:12,cliente:"MANNYS CATERING",matricula:"N616VG",servicio:"CATERING",gastos:6460,monto:14600,estado:"PAGADO"},
+  {id:13,cliente:"MANNY HANDLING SUPPORT",matricula:"N900KG",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
+  {id:14,cliente:"MANNY HANDLING SUPPORT",matricula:"N812NE",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
+  {id:15,cliente:"MANNY HANDLING SUPPORT",matricula:"N812NE",servicio:"CATERING",gastos:2000,monto:2000,estado:"PAGADO"},
+  {id:16,cliente:"MANNY HANDLING SUPPORT",matricula:"N173JM",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
+  {id:17,cliente:"MANNY HANDLING SUPPORT",matricula:"N920MD",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
+  {id:18,cliente:"MANNYS CATERING",matricula:"N420FJ",servicio:"CATERING",gastos:2770.4,monto:5150.4,estado:"PENDIENTE"},
+  {id:19,cliente:"MANNY HANDLING SUPPORT",matricula:"N616VG",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PAGADO"},
+  {id:20,cliente:"MANNY HANDLING SUPPORT",matricula:"N969PW",servicio:"HANDLING SUPERVISION",gastos:4900,monto:17000,estado:"PAGADO"},
+  {id:21,cliente:"MANNYS CATERING",matricula:"N969PW",servicio:"CATERING",gastos:2494,monto:4680,estado:"PENDIENTE"},
+  {id:22,cliente:"MANNY HANDLING SUPPORT",matricula:"N989JC",servicio:"HANDLING SUPERVISION",gastos:1900,monto:12400,estado:"PENDIENTE"},
+  {id:23,cliente:"MANNYS CATERING",matricula:"N307HR",servicio:"CATERING",gastos:5675,monto:7450,estado:"PENDIENTE"},
+  {id:24,cliente:"MANNY HANDLING SUPPORT",matricula:"N307HR",servicio:"HANDLING SUPERVISION",gastos:3000,monto:13400,estado:"PENDIENTE"},
+  {id:25,cliente:"MANNY HANDLING SUPPORT",matricula:"N661CH",servicio:"HANDLING SUPERVISION",gastos:3000,monto:13400,estado:"PENDIENTE"},
+  {id:26,cliente:"MANNYS CATERING",matricula:"N661CH",servicio:"CATERING",gastos:19260,monto:16800,estado:"PENDIENTE"},
+  {id:27,cliente:"MANNYS CATERING",matricula:"N313AG",servicio:"CATERING",gastos:14480,monto:26092,estado:"PENDIENTE"},
+  {id:28,cliente:"MANNYS CATERING",matricula:"9HGVB",servicio:"CATERING",gastos:25099,monto:32875,estado:"PENDIENTE"},
+  {id:29,cliente:"MANNY HANDLING SUPPORT",matricula:"N830EM",servicio:"HANDLING SUPERVISION",gastos:16050,monto:40450,estado:"PENDIENTE"},
+  {id:30,cliente:"MANNY HANDLING SUPPORT",matricula:"N723HC",servicio:"HANDLING SUPERVISION",gastos:0,monto:8000,estado:"PENDIENTE"},
+  {id:31,cliente:"MANNY HANDLING SUPPORT",matricula:"A7CGG",servicio:"HANDLING SUPERVISION",gastos:0,monto:16500,estado:"PENDIENTE"},
+  {id:32,cliente:"MANNYS CATERING",matricula:"A7CGG",servicio:"CATERING",gastos:37000,monto:54367,estado:"PENDIENTE"},
+  {id:33,cliente:"GASTOS INTERNOS",matricula:"—",servicio:"GASTO OPERATIVO",gastos:5600,monto:0,estado:"GASTO"},
+  {id:34,cliente:"GASTOS INTERNOS",matricula:"—",servicio:"GASTO OPERATIVO",gastos:32000,monto:0,estado:"GASTO"},
+  {id:35,cliente:"GASTOS INTERNOS",matricula:"—",servicio:"GASTO OPERATIVO",gastos:7129,monto:0,estado:"GASTO"},
+  {id:36,cliente:"GASTOS INTERNOS",matricula:"—",servicio:"GASTO OPERATIVO",gastos:18000,monto:0,estado:"GASTO"},
+  {id:37,cliente:"GASTOS INTERNOS",matricula:"—",servicio:"GASTO OPERATIVO",gastos:14000,monto:0,estado:"GASTO"},
+];
+
+let ops = [];
+let nextId = 100;
+let currentFilter = 'todos';
+let chart1, chart2;
+let syncInterval;
+
+function setSyncStatus(status, text) {
+  const dot = document.getElementById('syncDot');
+  const txt = document.getElementById('syncTxt');
+  dot.className = 'sync-dot ' + status;
+  txt.textContent = text;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function showError(msg) {
+  const b = document.getElementById('errorBox');
+  if(msg) { b.textContent = msg; b.style.display = 'block'; }
+  else { b.style.display = 'none'; }
+}
+
+async function callClaude(payload) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      system: `Eres un sistema de base de datos para Pauream. 
+Respondes SOLO con JSON válido, sin texto adicional ni backticks.
+Operaciones disponibles:
+- GET: retorna {"ops": [...array de operaciones...]}
+- SET: guarda operaciones y retorna {"ok": true}
+Usa window.storage para persistir datos con clave "${STORAGE_KEY}".
+Formato de operación: {id, cliente, matricula, servicio, gastos, monto, estado}`,
+      messages: [{ role: 'user', content: JSON.stringify(payload) }]
+    })
+  });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const data = await res.json();
+  const text = data.content.map(b => b.text || '').join('').trim();
+  return JSON.parse(text.replace(/```json|```/g, '').trim());
+}
+
+async function loadOps() {
+  setSyncStatus('syncing', 'Cargando...');
+  try {
+    const result = await callClaude({ action: 'GET', key: STORAGE_KEY, seed: SEED });
+    if (result.ops && Array.isArray(result.ops)) {
+      ops = result.ops.length > 0 ? result.ops : SEED;
+      nextId = Math.max(...ops.map(o => o.id || 0)) + 1;
+    } else {
+      ops = SEED;
+    }
+    setSyncStatus('ok', 'Sincronizado');
+    showError(null);
+    renderAll();
+  } catch(e) {
+    setSyncStatus('err', 'Sin conexión');
+    // fallback to localStorage
+    const local = localStorage.getItem(STORAGE_KEY);
+    ops = local ? JSON.parse(local) : SEED;
+    nextId = Math.max(...ops.map(o => o.id || 0)) + 1;
+    showError('No se pudo conectar a la nube. Mostrando datos locales. Los cambios se guardarán localmente.');
+    renderAll();
+  }
+}
+
+async function saveOps() {
+  // Always save locally first
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(ops));
+  setSyncStatus('syncing', 'Guardando...');
+  try {
+    await callClaude({ action: 'SET', key: STORAGE_KEY, ops });
+    setSyncStatus('ok', 'Sincronizado');
+    showError(null);
+  } catch(e) {
+    setSyncStatus('err', 'Guardado local');
+    showError('Sin conexión a la nube. Los datos están guardados localmente en este dispositivo.');
+  }
+}
+
+async function pollUpdates() {
+  try {
+    const result = await callClaude({ action: 'GET', key: STORAGE_KEY });
+    if (result.ops && result.ops.length !== ops.length) {
+      ops = result.ops;
+      nextId = Math.max(...ops.map(o => o.id || 0)) + 1;
+      renderAll();
+      showToast('Datos actualizados desde otro dispositivo');
+    }
+    setSyncStatus('ok', 'Sincronizado');
+  } catch(e) {
+    setSyncStatus('err', 'Sin conexión');
+  }
+}
+
+function fmt(n) { return '$' + Math.round(n).toLocaleString('es-MX'); }
+function ganancia(o) { return (o.monto||0) - (o.gastos||0); }
+
+function renderMetrics() {
+  const ingresos = ops.filter(o=>o.estado!=='GASTO').reduce((s,o)=>s+(o.monto||0),0);
+  const gastosTotales = ops.reduce((s,o)=>s+(o.gastos||0),0);
+  const gananciaNeta = ingresos - gastosTotales;
+  const pendiente = ops.filter(o=>o.estado==='PENDIENTE').reduce((s,o)=>s+(o.monto||0),0);
+  const pct = ingresos > 0 ? Math.round((gananciaNeta/ingresos)*100) : 0;
+  document.getElementById('metrics').innerHTML = `
+    <div class="metric"><div class="label">Total facturado</div><div class="value" style="color:#185FA5;">${fmt(ingresos)}</div><div class="sub">${ops.filter(o=>o.estado!=='GASTO').length} operaciones</div></div>
+    <div class="metric"><div class="label">Gastos totales</div><div class="value" style="color:#A32D2D;">${fmt(gastosTotales)}</div><div class="sub">Proveedores + operativos</div></div>
+    <div class="metric"><div class="label">Ganancia neta</div><div class="value" style="color:${gananciaNeta>=0?'#3B6D11':'#A32D2D'};">${fmt(gananciaNeta)}</div><div class="sub">Margen ${pct}%</div></div>
+    <div class="metric"><div class="label">Por cobrar</div><div class="value" style="color:#854F0B;">${fmt(pendiente)}</div><div class="sub">${ops.filter(o=>o.estado==='PENDIENTE').length} pendientes</div></div>
+  `;
+}
+
+function renderCharts() {
+  const byService = {};
+  ops.filter(o=>o.estado!=='GASTO').forEach(o=>{ byService[o.servicio]=(byService[o.servicio]||0)+(o.monto||0); });
+  const svLabels = Object.keys(byService);
+  const svData = svLabels.map(k=>Math.round(byService[k]));
+  const colors1 = ['#185FA5','#1D9E75','#BA7517','#D4537E','#533AB7'];
+
+  if(chart1) chart1.destroy();
+  chart1 = new Chart(document.getElementById('chart1').getContext('2d'), {
+    type:'bar',
+    data:{ labels:svLabels, datasets:[{ data:svData, backgroundColor:colors1.slice(0,svLabels.length), borderRadius:4 }] },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx=>'$'+Math.round(ctx.parsed.y).toLocaleString('es-MX') }}},
+      scales:{ y:{ ticks:{ callback:v=>'$'+Math.round(v/1000)+'k' }, grid:{color:'rgba(0,0,0,0.05)'} }, x:{grid:{display:false}} }
+    }
+  });
+  document.getElementById('legend1').innerHTML = svLabels.map((l,i)=>`<span><span style="width:10px;height:10px;border-radius:2px;background:${colors1[i]||'#888'};display:inline-block;"></span> ${l}</span>`).join('');
+
+  const pagado = ops.filter(o=>o.estado==='PAGADO').reduce((s,o)=>s+(o.monto||0),0);
+  const pendiente = ops.filter(o=>o.estado==='PENDIENTE').reduce((s,o)=>s+(o.monto||0),0);
+  if(chart2) chart2.destroy();
+  chart2 = new Chart(document.getElementById('chart2').getContext('2d'), {
+    type:'doughnut',
+    data:{ labels:['Pagado','Pendiente'], datasets:[{ data:[Math.round(pagado),Math.round(pendiente)], backgroundColor:['#3B6D11','#BA7517'], borderWidth:0 }] },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx=>'$'+Math.round(ctx.parsed).toLocaleString('es-MX') }}},
+      cutout:'65%'
+    }
+  });
+  const total2 = pagado+pendiente;
+  const pct2 = total2>0?Math.round((pagado/total2)*100):0;
+  document.getElementById('legend2').innerHTML = `
+    <span><span style="width:10px;height:10px;border-radius:2px;background:#3B6D11;display:inline-block;"></span> Pagado ${pct2}%</span>
+    <span><span style="width:10px;height:10px;border-radius:2px;background:#BA7517;display:inline-block;"></span> Pendiente ${100-pct2}%</span>
+  `;
+}
+
+function renderTable() {
+  let filtered = currentFilter==='todos' ? ops : ops.filter(o=>o.estado===currentFilter);
+  const tbody = document.getElementById('opsBody');
+  if(!filtered.length) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:#888;padding:20px;">Sin operaciones</td></tr>'; return; }
+  tbody.innerHTML = filtered.slice().reverse().map(o=>{
+    const g = ganancia(o);
+    const bc = o.estado==='PAGADO'?'pagado':o.estado==='PENDIENTE'?'pendiente':'gasto';
+    return `<tr>
+      <td style="font-weight:500;">${o.cliente}</td>
+      <td class="mono">${o.matricula}</td>
+      <td>${o.servicio}</td>
+      <td style="text-align:right;color:#5F5E5A;">${o.gastos?fmt(o.gastos):'—'}</td>
+      <td style="text-align:right;">${o.monto?fmt(o.monto):'—'}</td>
+      <td style="text-align:right;color:${g>=0?'#3B6D11':'#A32D2D'};">${fmt(g)}</td>
+      <td><span class="badge ${bc}">${o.estado}</span></td>
+      <td><button class="del-btn" onclick="deleteOp(${o.id})" title="Eliminar"><i class="ti ti-trash"></i></button></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterOps(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+async function addOp() {
+  const cliente = document.getElementById('f_cliente').value.trim().toUpperCase();
+  const matricula = document.getElementById('f_matricula').value.trim().toUpperCase();
+  const servicio = document.getElementById('f_servicio').value;
+  const gastos = parseFloat(document.getElementById('f_gastos').value)||0;
+  const monto = parseFloat(document.getElementById('f_monto').value)||0;
+  const estado = document.getElementById('f_estado').value;
+  if(!cliente||!matricula){ showToast('⚠ Ingresa cliente y matrícula'); return; }
+
+  const btn = document.getElementById('btnAdd');
+  btn.disabled = true;
+  document.getElementById('addStatus').textContent = 'Guardando...';
+
+  ops.push({id:nextId++, cliente, matricula, servicio, gastos, monto, estado});
+  ['f_cliente','f_matricula','f_gastos','f_monto'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+  showToast('Operación agregada');
+
+  await saveOps();
+  btn.disabled = false;
+  document.getElementById('addStatus').textContent = '';
+}
+
+async function deleteOp(id) {
+  if(!confirm('¿Eliminar esta operación?')) return;
+  ops = ops.filter(o=>o.id!==id);
+  renderAll();
+  await saveOps();
+  showToast('Operación eliminada');
+}
+
+function renderAll() {
+  renderMetrics();
+  renderCharts();
+  renderTable();
+  document.getElementById('stamp').textContent = 'Actualizado: ' + new Date().toLocaleString('es-MX');
+}
+
+// Init
+document.getElementById('ts').textContent = new Date().toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+loadOps();
+
+// Poll for updates every 30 seconds
+syncInterval = setInterval(pollUpdates, 30000);
+</script>
+</body>
+</html>
