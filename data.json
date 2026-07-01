@@ -464,5 +464,16 @@
     "gastos": 1000,
     "estado": "PENDIENTE",
     "factura": ""
+  },
+  {
+    "id": 1782943526478,
+    "fecha": "2026-06-29",
+    "cliente": "MANNY HANDLING SUPPORT",
+    "matricula": "A7CGG",
+    "tipo": "HANDLING SUPERVISION",
+    "monto": 14800,
+    "gastos": 1000,
+    "estado": "PENDIENTE",
+    "factura": ""
   }
 ]
