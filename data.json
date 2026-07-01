@@ -475,5 +475,16 @@
     "gastos": 1000,
     "estado": "PENDIENTE",
     "factura": ""
+  },
+  {
+    "id": 1782943562078,
+    "fecha": "2026-07-01",
+    "cliente": "MANNYS CATERING",
+    "matricula": "A7CGG",
+    "tipo": "CATERING",
+    "monto": 70634,
+    "gastos": 51870,
+    "estado": "PENDIENTE",
+    "factura": ""
   }
 ]
