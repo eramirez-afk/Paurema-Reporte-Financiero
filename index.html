@@ -76,6 +76,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .toast.show{opacity:1;}
 .loader{text-align:center;padding:40px;color:#888780;font-size:13px;}
 .tip{font-size:11px;color:#888780;margin-bottom:8px;}
+.month-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.month-bar label{font-size:11px;color:#5F5E5A;font-weight:500;}
+.month-select{font-size:12px;padding:5px 10px;border:0.5px solid #b4b2a9;border-radius:8px;background:#fff;color:#1a1a18;font-family:inherit;cursor:pointer;}
+.month-select:focus{border-color:#185FA5;outline:none;}
+.ops-count{display:flex;align-items:center;gap:6px;font-size:12px;color:#5F5E5A;background:#fff;border:0.5px solid #d3d1c7;border-radius:8px;padding:5px 12px;}
+.ops-count b{color:#1a1a18;}
 @media(max-width:700px){
   .metrics{grid-template-columns:repeat(2,1fr);}
   .charts-row{grid-template-columns:1fr;}
@@ -94,6 +100,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+  <div class="month-bar" style="margin:0;">
+    <label><i class="ti ti-calendar" style="font-size:12px;vertical-align:-1px;"></i> Filtrar por mes:</label>
+    <select class="month-select" id="monthFilter" onchange="applyMonthFilter()">
+      <option value="todos">Todos los meses</option>
+    </select>
+    <div class="ops-count" id="opsCount"><i class="ti ti-clipboard-list" style="font-size:13px;"></i> <span>Cargando...</span></div>
+  </div>
+</div>
 <div id="metrics" class="metrics"><div class="loader" style="grid-column:1/-1;">Cargando datos...</div></div>
 
 <div class="charts-row">
@@ -367,22 +382,25 @@ async function deleteOp(id) {
 
 // ── RENDER ────────────────────────────────────────────────
 function renderMetrics() {
-  const ingresos = ops.filter(o=>o.estado!=='GASTO').reduce((s,o)=>s+(o.monto||0),0);
-  const gastosTotales = ops.reduce((s,o)=>s+(o.gastos||0),0);
+  const f = getFilteredOps();
+  const ingresos = f.filter(o=>o.estado!=='GASTO').reduce((s,o)=>s+(o.monto||0),0);
+  const gastosTotales = f.reduce((s,o)=>s+(o.gastos||0),0);
   const gananciaNeta = ingresos - gastosTotales;
-  const pendiente = ops.filter(o=>o.estado==='PENDIENTE').reduce((s,o)=>s+(o.monto||0),0);
+  const pendiente = f.filter(o=>o.estado==='PENDIENTE').reduce((s,o)=>s+(o.monto||0),0);
   const pct = ingresos > 0 ? Math.round((gananciaNeta/ingresos)*100) : 0;
+  const label = currentMonth === 'todos' ? 'todas las ops' : document.getElementById('monthFilter').options[document.getElementById('monthFilter').selectedIndex]?.text || '';
   document.getElementById('metrics').innerHTML = `
-    <div class="metric"><div class="label">Total facturado</div><div class="value" style="color:#185FA5;">${fmt(ingresos)}</div><div class="sub">${ops.filter(o=>o.estado!=='GASTO').length} operaciones</div></div>
+    <div class="metric"><div class="label">Total facturado</div><div class="value" style="color:#185FA5;">${fmt(ingresos)}</div><div class="sub">${f.filter(o=>o.estado!=='GASTO').length} operaciones</div></div>
     <div class="metric"><div class="label">Gastos totales</div><div class="value" style="color:#A32D2D;">${fmt(gastosTotales)}</div><div class="sub">Proveedores + operativos</div></div>
     <div class="metric"><div class="label">Ganancia neta</div><div class="value" style="color:${gananciaNeta>=0?'#3B6D11':'#A32D2D'};">${fmt(gananciaNeta)}</div><div class="sub">Margen ${pct}%</div></div>
-    <div class="metric"><div class="label">Por cobrar</div><div class="value" style="color:#854F0B;">${fmt(pendiente)}</div><div class="sub">${ops.filter(o=>o.estado==='PENDIENTE').length} pendientes</div></div>
+    <div class="metric"><div class="label">Por cobrar</div><div class="value" style="color:#854F0B;">${fmt(pendiente)}</div><div class="sub">${f.filter(o=>o.estado==='PENDIENTE').length} pendientes</div></div>
   `;
 }
 
 function renderCharts() {
+  const f = getFilteredOps();
   const byService = {};
-  ops.filter(o=>o.estado!=='GASTO').forEach(o=>{ byService[o.servicio]=(byService[o.servicio]||0)+(o.monto||0); });
+  f.filter(o=>o.estado!=='GASTO').forEach(o=>{ byService[o.servicio]=(byService[o.servicio]||0)+(o.monto||0); });
   const svLabels = Object.keys(byService);
   const svData = svLabels.map(k=>Math.round(byService[k]));
   const colors1 = ['#185FA5','#1D9E75','#BA7517','#D4537E','#533AB7'];
@@ -397,8 +415,8 @@ function renderCharts() {
   });
   document.getElementById('legend1').innerHTML = svLabels.map((l,i)=>`<span><span style="width:10px;height:10px;border-radius:2px;background:${colors1[i]||'#888'};display:inline-block;margin-right:4px;"></span>${l}</span>`).join('');
 
-  const pagado   = ops.filter(o=>o.estado==='PAGADO').reduce((s,o)=>s+(o.monto||0),0);
-  const pendiente= ops.filter(o=>o.estado==='PENDIENTE').reduce((s,o)=>s+(o.monto||0),0);
+  const pagado   = f.filter(o=>o.estado==='PAGADO').reduce((s,o)=>s+(o.monto||0),0);
+  const pendiente= f.filter(o=>o.estado==='PENDIENTE').reduce((s,o)=>s+(o.monto||0),0);
   if(chart2) chart2.destroy();
   chart2 = new Chart(document.getElementById('chart2').getContext('2d'), {
     type:'doughnut',
@@ -417,7 +435,8 @@ function renderCharts() {
 }
 
 function renderTable() {
-  let filtered = currentFilter==='todos' ? ops : ops.filter(o=>o.estado===currentFilter);
+  let base = getFilteredOps();
+  let filtered = currentFilter==='todos' ? base : base.filter(o=>o.estado===currentFilter);
   const tbody = document.getElementById('opsBody');
   if (!filtered.length) { tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:#888;padding:20px;">Sin operaciones</td></tr>'; return; }
 
@@ -502,7 +521,58 @@ async function addOp() {
   document.getElementById('addStatus').textContent = '';
 }
 
+function populateMonthFilter() {
+  const months = new Set();
+  ops.forEach(o => {
+    if (o.fecha) {
+      const [y, m] = o.fecha.split('-');
+      if (y && m) months.add(y + '-' + m);
+    }
+  });
+  const sorted = Array.from(months).sort().reverse();
+  const sel = document.getElementById('monthFilter');
+  const current = sel.value;
+  // Keep "todos" option, rebuild rest
+  while (sel.options.length > 1) sel.remove(1);
+  const MESES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  sorted.forEach(ym => {
+    const [y, m] = ym.split('-');
+    const label = MESES[parseInt(m)] + ' ' + y;
+    const opt = new Option(label, ym);
+    sel.add(opt);
+  });
+  // Restore selection if still valid
+  if (current && Array.from(sel.options).some(o => o.value === current)) sel.value = current;
+}
+
+let currentMonth = 'todos';
+
+function applyMonthFilter() {
+  currentMonth = document.getElementById('monthFilter').value;
+  renderAll();
+}
+
+function getFilteredOps() {
+  let filtered = ops;
+  if (currentMonth !== 'todos') {
+    filtered = filtered.filter(o => o.fecha && o.fecha.startsWith(currentMonth));
+  }
+  return filtered;
+}
+
+function updateOpsCount() {
+  const filtered = getFilteredOps();
+  const total = filtered.filter(o => o.estado !== 'GASTO').length;
+  const pagadas = filtered.filter(o => o.estado === 'PAGADO').length;
+  const pendientes = filtered.filter(o => o.estado === 'PENDIENTE').length;
+  const gastos = filtered.filter(o => o.estado === 'GASTO').length;
+  const label = currentMonth === 'todos' ? 'Total' : document.getElementById('monthFilter').options[document.getElementById('monthFilter').selectedIndex].text;
+  document.getElementById('opsCount').innerHTML = \`<i class="ti ti-clipboard-list" style="font-size:13px;"></i> <b>\${total}</b> ops &nbsp;·&nbsp; <span style="color:#3B6D11;">\${pagadas} pagadas</span> &nbsp;·&nbsp; <span style="color:#BA7517;">\${pendientes} pendientes</span> &nbsp;·&nbsp; <span style="color:#A32D2D;">\${gastos} gastos</span>\`;
+}
+
 function renderAll() {
+  populateMonthFilter();
+  updateOpsCount();
   renderMetrics();
   renderCharts();
   renderTable();
