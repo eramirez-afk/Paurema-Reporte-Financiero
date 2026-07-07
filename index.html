@@ -210,7 +210,14 @@ async function ghSha() {
 }
 
 async function ghWrite(data) {
-  if (!fileSha) await ghSha();
+  // Always get a fresh SHA right before writing to avoid stale SHA errors
+  const shaResp = await fetch(API_URL, {
+    headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+  });
+  if (!shaResp.ok) throw new Error('No se pudo obtener SHA: ' + shaResp.status);
+  const shaData = await shaResp.json();
+  fileSha = shaData.sha;
+
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
   const r = await fetch(API_URL, {
     method: 'PUT',
@@ -221,7 +228,10 @@ async function ghWrite(data) {
     },
     body: JSON.stringify({ message: 'Actualizar operaciones', content, sha: fileSha })
   });
-  if (!r.ok) throw new Error('write ' + r.status);
+  if (!r.ok) {
+    const errBody = await r.json().catch(()=>({}));
+    throw new Error('Error al guardar (' + r.status + '): ' + (errBody.message||''));
+  }
   const d = await r.json();
   fileSha = d.content.sha;
 }
