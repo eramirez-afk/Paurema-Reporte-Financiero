@@ -239,31 +239,45 @@ async function ghWrite(data) {
 // ── LOAD ──────────────────────────────────────────────────
 async function loadOps() {
   sync('syncing', 'Cargando...');
+  // Show session cache immediately while fetching
+  const cached = sessionStorage.getItem('pauream_ops');
+  if (cached) {
+    try {
+      ops = JSON.parse(cached);
+      nextId = Math.max(0, ...ops.map(o => o.id || 0)) + 1;
+      renderAll();
+      sync('syncing', 'Actualizando...');
+    } catch(e) {}
+  }
   try {
     const data = await ghRead();
     ops = data.ops || [];
     nextId = Math.max(0, ...ops.map(o => o.id || 0)) + 1;
-    // Get SHA in background for future writes
-    ghSha().catch(() => {});
+    sessionStorage.setItem('pauream_ops', JSON.stringify(ops));
     sync('ok', 'Sincronizado');
     renderAll();
   } catch(e) {
     sync('err', 'Error: ' + e.message);
-    document.getElementById('metrics').innerHTML =
-      '<div style="grid-column:1/-1;text-align:center;padding:30px;color:#A32D2D;">Error al cargar datos: ' + e.message + '</div>';
+    if (!cached) {
+      document.getElementById('metrics').innerHTML =
+        '<div style="grid-column:1/-1;text-align:center;padding:30px;color:#A32D2D;">Error al cargar datos: ' + e.message + '</div>';
+    }
   }
 }
 
 async function saveOps(msg) {
   sync('syncing', 'Guardando...');
+  // Save to sessionStorage immediately so refresh shows latest
+  sessionStorage.setItem('pauream_ops', JSON.stringify(ops));
   try {
     await ghWrite({ ops });
-    sync('ok', 'Guardado ✓');
-    setTimeout(() => sync('ok', 'Sincronizado'), 2000);
+    sync('ok', '✓ Guardado en la nube');
+    setTimeout(() => sync('ok', 'Sincronizado'), 3000);
     if (msg) toast(msg);
   } catch(e) {
-    sync('err', 'Error al guardar');
-    toast('⚠ ' + e.message);
+    sync('err', 'Error al guardar: ' + e.message);
+    toast('⚠ Error: ' + e.message);
+    console.error('saveOps error:', e);
   }
 }
 
