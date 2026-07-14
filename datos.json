@@ -392,7 +392,7 @@
       "servicio": "CATERING",
       "gastos": 25099,
       "monto": 32875,
-      "estado": "PAGADO",
+      "estado": "PENDIENTE",
       "fecha": "2026-06-15",
       "notas": ""
     },
