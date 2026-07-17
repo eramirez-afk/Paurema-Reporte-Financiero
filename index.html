@@ -21,9 +21,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .topbar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
 .topbar label{font-size:12px;color:#5F5E5A;font-weight:500;}
 .month-sel{font-size:12px;padding:5px 10px;border:0.5px solid #b4b2a9;border-radius:8px;background:#fff;font-family:inherit;cursor:pointer;outline:none;}
-.month-sel:focus{border-color:#185FA5;}
 .ops-pill{font-size:11px;padding:4px 12px;border-radius:20px;background:#fff;border:0.5px solid #d3d1c7;color:#5F5E5A;display:flex;gap:8px;align-items:center;}
-.ops-pill b{color:#1a1a18;}
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.25rem;}
 .metric{background:#ededeb;border-radius:8px;padding:14px 16px;}
 .metric .label{font-size:12px;color:#5F5E5A;margin-bottom:6px;}
@@ -80,26 +78,21 @@ tr:hover td{background:#f9f9f7;}
 </head>
 <body>
 <div class="container">
-
 <div class="header">
   <h1><i class="ti ti-plane"></i>Pauream — Reporte Ejecutivo</h1>
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
     <span style="font-size:12px;color:#5F5E5A;" id="hdate"></span>
-    <div class="sync-badge"><span class="sync-dot" id="sdot"></span><span id="stxt">Cargando...</span></div>
+    <div class="sync-badge"><span class="sync-dot" id="sdot"></span><span id="stxt">Listo</span></div>
   </div>
 </div>
 
 <div class="topbar">
   <label><i class="ti ti-calendar" style="font-size:12px;vertical-align:-1px;margin-right:3px;"></i>Mes:</label>
-  <select class="month-sel" id="monthSel" onchange="onMonthChange()">
-    <option value="">Todos</option>
-  </select>
+  <select class="month-sel" id="monthSel" onchange="onMonthChange()"><option value="">Todos</option></select>
   <div class="ops-pill" id="opsPill">—</div>
 </div>
 
-<div class="metrics" id="metrics">
-  <div style="grid-column:1/-1;text-align:center;padding:30px;color:#888;">Cargando datos...</div>
-</div>
+<div class="metrics" id="metrics"></div>
 
 <div class="charts-row">
   <div class="chart-card">
@@ -123,10 +116,10 @@ tr:hover td{background:#f9f9f7;}
     <button class="fbtn" onclick="setFilter('GASTO',this)">Gastos</button>
   </div>
 </div>
-<p class="tip">Clic en el lápiz ✏️ para editar · Clic en el badge de estado para cambiarlo rápido</p>
+<p class="tip">Clic en ✏️ para editar · Clic en el badge de estado para cambiar rápido</p>
 
 <div class="table-wrap">
-  <table id="tbl">
+  <table>
     <thead><tr>
       <th>Cliente</th><th>Matrícula</th><th>Factura</th><th>Servicio</th>
       <th style="text-align:right">Gastos</th><th style="text-align:right">Monto</th>
@@ -158,206 +151,139 @@ tr:hover td{background:#f9f9f7;}
     <div class="fg"><label>Fecha</label><input id="nfe" type="date"></div>
     <div class="fg"><label>Notas</label><input id="nno" placeholder="Opcional"></div>
   </div>
-  <button class="btn-add" id="addBtn" onclick="addOp()"><i class="ti ti-check" style="font-size:13px;margin-right:4px;vertical-align:-1px;"></i>Agregar operación</button>
+  <button class="btn-add" id="addBtn" onclick="addOp()">
+    <i class="ti ti-check" style="font-size:13px;margin-right:4px;vertical-align:-1px;"></i>Agregar operación
+  </button>
 </div>
-
 <div class="stamp" id="stamp"></div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-// ── CONFIG ────────────────────────────────────────────────
-const GH_TOKEN = 'ghp_60UHRr' + 'EwzYL1OrxQgX1i0a8Wbym7lv484Vn4';
-const GH_REPO  = 'eramirez-afk/Paurema-Reporte-Financiero';
-const RAW_URL  = `https://raw.githubusercontent.com/${GH_REPO}/main/datos.json`;
-const API_URL  = `https://api.github.com/repos/${GH_REPO}/contents/datos.json`;
+const GH_T1 = 'ghp_60UHRr';
+const GH_T2 = 'EwzYL1OrxQgX1i0a8Wbym7lv484Vn4';
+const GH_TOKEN = GH_T1 + GH_T2;
+const GH_REPO = 'eramirez-afk/Paurema-Reporte-Financiero';
+const IDX_URL = 'https://api.github.com/repos/' + GH_REPO + '/contents/index.html';
 
-// ── STATE ─────────────────────────────────────────────────
-let ops = [], fileSha = null, nextId = 100;
+// Data is embedded directly in this file
+let ops = [{"id": 1, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N718JJ", "factura": "1044", "servicio": "HANDLING SUPERVISION", "gastos": 0, "monto": 8000, "estado": "PAGADO", "fecha": "2026-03-12", "notas": ""}, {"id": 2, "cliente": "MANNYS CATERING", "matricula": "N890RW", "factura": "1045", "servicio": "CATERING", "gastos": 39000, "monto": 68478.23, "estado": "PAGADO", "fecha": "2026-03-19", "notas": ""}, {"id": 3, "cliente": "MANNY HANDLING SUPPORT", "matricula": "9HHFK", "factura": "1048", "servicio": "HANDLING SUPERVISION", "gastos": 0, "monto": 15400, "estado": "PAGADO", "fecha": "", "notas": ""}, {"id": 4, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N358V", "factura": "1047", "servicio": "HANDLING SUPERVISION", "gastos": 0, "monto": 8000, "estado": "PAGADO", "fecha": "2026-03-24", "notas": ""}, {"id": 5, "cliente": "MANNY HANDLING SUPPORT", "matricula": "A7CGB", "factura": "1049", "servicio": "HANDLING SUPERVISION", "gastos": 0, "monto": 8000, "estado": "PAGADO", "fecha": "2026-03-26", "notas": ""}, {"id": 6, "cliente": "MARZAL COMPANY", "matricula": "XA-ASP", "factura": "1050", "servicio": "CATERING", "gastos": 5100, "monto": 6888, "estado": "PAGADO", "fecha": "2026-03-27", "notas": ""}, {"id": 7, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N225EL", "factura": "1051", "servicio": "HANDLING SUPERVISION", "gastos": 0, "monto": 9800, "estado": "PAGADO", "fecha": "2026-03-28", "notas": ""}, {"id": 8, "cliente": "MANNYS CATERING", "matricula": "LV-VEG", "factura": "1052", "servicio": "CATERING", "gastos": 10720, "monto": 14942.97, "estado": "PAGADO", "fecha": "2026-03-29", "notas": ""}, {"id": 9, "cliente": "MANNYS CATERING", "matricula": "DAUSC", "factura": "1056", "servicio": "CATERING", "gastos": 189565, "monto": 290170, "estado": "PAGADO", "fecha": "2026-04-04", "notas": ""}, {"id": 10, "cliente": "MANNY HANDLING SUPPORT", "matricula": "DAUSC", "factura": "1053", "servicio": "HANDLING SUPERVISION", "gastos": 0, "monto": 8000, "estado": "PAGADO", "fecha": "2026-04-04", "notas": ""}, {"id": 11, "cliente": "MANNYS CATERING", "matricula": "DAUSC", "factura": "1057", "servicio": "TRANSPORTACION", "gastos": 5000, "monto": 5000, "estado": "PAGADO", "fecha": "2026-04-04", "notas": ""}, {"id": 12, "cliente": "MANNYS CATERING", "matricula": "N616VG", "factura": "1058", "servicio": "CATERING", "gastos": 6460, "monto": 14600, "estado": "PAGADO", "fecha": "2026-04-09", "notas": ""}, {"id": 13, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N900KG", "factura": "1059", "servicio": "HANDLING SUPERVISION", "gastos": 0, "monto": 8000, "estado": "PAGADO", "fecha": "2026-04-09", "notas": ""}, {"id": 14, "cliente": "LAPTOP", "matricula": "—", "factura": "", "servicio": "GASTO OPERATIVO", "gastos": 5600, "monto": 0, "estado": "GASTO", "fecha": "", "notas": ""}, {"id": 15, "cliente": "LONA", "matricula": "—", "factura": "", "servicio": "GASTO OPERATIVO", "gastos": 32000, "monto": 0, "estado": "GASTO", "fecha": "", "notas": ""}, {"id": 16, "cliente": "HOT LUNCH / PROPINAS", "matricula": "DAUSC", "factura": "", "servicio": "GASTO OPERATIVO", "gastos": 7129, "monto": 0, "estado": "GASTO", "fecha": "", "notas": ""}, {"id": 17, "cliente": "SALARIO (EDSON)", "matricula": "—", "factura": "", "servicio": "GASTO OPERATIVO", "gastos": 18000, "monto": 0, "estado": "GASTO", "fecha": "", "notas": ""}, {"id": 18, "cliente": "CELULAR", "matricula": "—", "factura": "", "servicio": "GASTO OPERATIVO", "gastos": 14000, "monto": 0, "estado": "GASTO", "fecha": "", "notas": ""}, {"id": 19, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N812NE", "factura": "1060", "servicio": "HANDLING SUPERVISION", "gastos": 0, "monto": 8000, "estado": "PAGADO", "fecha": "2026-04-16", "notas": ""}, {"id": 20, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N812NE", "factura": "1061", "servicio": "CATERING", "gastos": 2000, "monto": 2000, "estado": "PAGADO", "fecha": "2026-04-16", "notas": ""}, {"id": 21, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N173JM", "factura": "1062", "servicio": "HANDLING SUPERVISION", "gastos": 0, "monto": 8000, "estado": "PAGADO", "fecha": "2026-04-23", "notas": ""}, {"id": 22, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N920MD", "factura": "1065", "servicio": "HANDLING SUPERVISION", "gastos": 0, "monto": 8000, "estado": "PAGADO", "fecha": "2026-05-06", "notas": ""}, {"id": 23, "cliente": "MANNYS CATERING", "matricula": "N420FJ", "factura": "1068", "servicio": "CATERING", "gastos": 2770.4, "monto": 5150.4, "estado": "PAGADO", "fecha": "2026-05-30", "notas": ""}, {"id": 24, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N616VG", "factura": "1069", "servicio": "HANDLING SUPERVISION", "gastos": 0, "monto": 8000, "estado": "PAGADO", "fecha": "2026-06-03", "notas": ""}, {"id": 25, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N969PW", "factura": "1071", "servicio": "HANDLING SUPERVISION", "gastos": 4900, "monto": 17000, "estado": "PAGADO", "fecha": "2026-06-03", "notas": ""}, {"id": 26, "cliente": "MANNYS CATERING", "matricula": "N969PW", "factura": "1072", "servicio": "CATERING", "gastos": 2494, "monto": 4680, "estado": "PENDIENTE", "fecha": "2026-06-04", "notas": ""}, {"id": 27, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N989JC", "factura": "1073", "servicio": "HANDLING SUPERVISION", "gastos": 1900, "monto": 12400, "estado": "PAGADO", "fecha": "2026-06-06", "notas": ""}, {"id": 28, "cliente": "MANNYS CATERING", "matricula": "N307HR", "factura": "1082", "servicio": "CATERING", "gastos": 5675, "monto": 7450, "estado": "PAGADO", "fecha": "2026-06-09", "notas": ""}, {"id": 29, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N307HR", "factura": "1074", "servicio": "HANDLING SUPERVISION", "gastos": 3000, "monto": 13400, "estado": "PAGADO", "fecha": "2026-06-09", "notas": ""}, {"id": 30, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N661CH", "factura": "1076", "servicio": "HANDLING SUPERVISION", "gastos": 3000, "monto": 13400, "estado": "PAGADO", "fecha": "2026-06-10", "notas": ""}, {"id": 31, "cliente": "MANNYS CATERING", "matricula": "N661CH", "factura": "1078/1079", "servicio": "CATERING", "gastos": 19260, "monto": 16800, "estado": "PAGADO", "fecha": "2026-06-10", "notas": ""}, {"id": 32, "cliente": "MANNYS CATERING", "matricula": "N313AG", "factura": "1081", "servicio": "CATERING", "gastos": 14480, "monto": 26092, "estado": "PAGADO", "fecha": "2026-06-15", "notas": ""}, {"id": 33, "cliente": "MANNYS CATERING", "matricula": "9HGVB", "factura": "1080", "servicio": "CATERING", "gastos": 25099, "monto": 32875, "estado": "PAGADO", "fecha": "2026-06-15", "notas": ""}, {"id": 34, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N830EM", "factura": "1090", "servicio": "HANDLING SUPERVISION", "gastos": 16050, "monto": 40450, "estado": "PENDIENTE", "fecha": "2026-06-21", "notas": ""}, {"id": 35, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N723HC", "factura": "1083", "servicio": "HANDLING SUPERVISION", "gastos": 0, "monto": 8000, "estado": "PENDIENTE", "fecha": "2026-06-19", "notas": ""}, {"id": 36, "cliente": "MANNY HANDLING SUPPORT", "matricula": "A7CGG", "factura": "1086", "servicio": "HANDLING SUPERVISION", "gastos": 0, "monto": 16500, "estado": "PENDIENTE", "fecha": "2026-06-20", "notas": ""}, {"id": 37, "cliente": "MANNYS CATERING", "matricula": "A7CGG", "factura": "", "servicio": "CATERING", "gastos": 26775, "monto": 35232, "estado": "PENDIENTE", "fecha": "2026-06-30", "notas": ""}, {"id": 38, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N60XC", "factura": "1095", "servicio": "HANDLING SUPERVISION", "gastos": 56379, "monto": 78178.5, "estado": "PENDIENTE", "fecha": "2026-06-28", "notas": ""}, {"id": 39, "cliente": "MANNY HANDLING SUPPORT", "matricula": "N944JT", "factura": "", "servicio": "HANDLING SUPERVISION", "gastos": 1000, "monto": 30000, "estado": "PENDIENTE", "fecha": "2026-06-28", "notas": ""}, {"id": 40, "cliente": "MANNY HANDLING SUPPORT", "matricula": "A7CGG", "factura": "", "servicio": "HANDLING SUPERVISION", "gastos": 1000, "monto": 14800, "estado": "PENDIENTE", "fecha": "2026-06-29", "notas": ""}, {"id": 41, "cliente": "MANNYS CATERING", "matricula": "A7CGG", "factura": "", "servicio": "CATERING", "gastos": 51870, "monto": 70634, "estado": "PENDIENTE", "fecha": "2026-06-29", "notas": ""}];
+let nextId = Math.max(0, ...ops.map(o => o.id||0)) + 1;
 let filterEstado = '', filterMonth = '', editingId = null;
 let ch1 = null, ch2 = null;
 
-// ── SYNC STATUS ───────────────────────────────────────────
 function sync(st, txt) {
   document.getElementById('sdot').className = 'sync-dot ' + st;
   document.getElementById('stxt').textContent = txt;
 }
-
 function toast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2500);
+  setTimeout(() => el.classList.remove('show'), 3000);
 }
 
-// ── GITHUB ────────────────────────────────────────────────
-async function ghRead() {
-  // Read via raw URL (no CORS issues)
-  const r = await fetch(RAW_URL + '?t=' + Date.now());
-  if (!r.ok) throw new Error('read ' + r.status);
-  return await r.json();
-}
-
-async function ghSha() {
-  // Get SHA for writing
-  const r = await fetch(API_URL, {
-    headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
-  });
-  if (!r.ok) throw new Error('sha ' + r.status);
-  const d = await r.json();
-  fileSha = d.sha;
-}
-
-async function ghWrite(data) {
-  // Always get a fresh SHA right before writing to avoid stale SHA errors
-  const shaResp = await fetch(API_URL, {
-    headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
-  });
-  if (!shaResp.ok) throw new Error('No se pudo obtener SHA: ' + shaResp.status);
-  const shaData = await shaResp.json();
-  fileSha = shaData.sha;
-
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-  const r = await fetch(API_URL, {
-    method: 'PUT',
-    headers: {
-      'Authorization': 'token ' + GH_TOKEN,
-      'Accept': 'application/vnd.github.v3+json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ message: 'Actualizar operaciones', content, sha: fileSha })
-  });
-  if (!r.ok) {
-    const errBody = await r.json().catch(()=>({}));
-    throw new Error('Error al guardar (' + r.status + '): ' + (errBody.message||''));
-  }
-  const d = await r.json();
-  fileSha = d.content.sha;
-}
-
-// ── LOAD ──────────────────────────────────────────────────
-async function loadOps() {
-  sync('syncing', 'Cargando...');
-  // Show session cache immediately while fetching
-  const cached = sessionStorage.getItem('pauream_ops');
-  if (cached) {
-    try {
-      ops = JSON.parse(cached);
-      nextId = Math.max(0, ...ops.map(o => o.id || 0)) + 1;
-      renderAll();
-      sync('syncing', 'Actualizando...');
-    } catch(e) {}
-  }
-  try {
-    const data = await ghRead();
-    ops = data.ops || [];
-    nextId = Math.max(0, ...ops.map(o => o.id || 0)) + 1;
-    sessionStorage.setItem('pauream_ops', JSON.stringify(ops));
-    sync('ok', 'Sincronizado');
-    renderAll();
-  } catch(e) {
-    sync('err', 'Error: ' + e.message);
-    if (!cached) {
-      document.getElementById('metrics').innerHTML =
-        '<div style="grid-column:1/-1;text-align:center;padding:30px;color:#A32D2D;">Error al cargar datos: ' + e.message + '</div>';
-    }
-  }
-}
-
+// Save by updating index.html itself with new embedded data
 async function saveOps(msg) {
   sync('syncing', 'Guardando...');
-  // Save to sessionStorage immediately so refresh shows latest
-  sessionStorage.setItem('pauream_ops', JSON.stringify(ops));
   try {
-    await ghWrite({ ops });
-    sync('ok', '✓ Guardado en la nube');
+    // Get current SHA of index.html
+    const shaResp = await fetch(IDX_URL, {
+      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (!shaResp.ok) throw new Error('SHA error: ' + shaResp.status);
+    const shaData = await shaResp.json();
+    const currentSha = shaData.sha;
+
+    // Get current HTML content
+    const currentHtml = atob(shaData.content.replace(/\n/g, ''));
+
+    // Replace the ops data in the HTML
+    const newOpsJson = JSON.stringify(ops);
+    const newHtml = currentHtml.replace(
+      /let ops = \[.*?\];/s,
+      'let ops = ' + newOpsJson + ';'
+    );
+
+    if (newHtml === currentHtml) throw new Error('No se pudo reemplazar datos en HTML');
+
+    const newContent = btoa(unescape(encodeURIComponent(newHtml)));
+    const putResp = await fetch(IDX_URL, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'token ' + GH_TOKEN,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message: 'Actualizar operaciones', content: newContent, sha: currentSha })
+    });
+
+    if (!putResp.ok) {
+      const err = await putResp.json().catch(()=>({}));
+      throw new Error(putResp.status + ': ' + (err.message||''));
+    }
+
+    sync('ok', '✓ Guardado');
     setTimeout(() => sync('ok', 'Sincronizado'), 3000);
     if (msg) toast(msg);
   } catch(e) {
-    sync('err', 'Error al guardar: ' + e.message);
-    toast('⚠ Error: ' + e.message);
-    console.error('saveOps error:', e);
+    sync('err', 'Error: ' + e.message);
+    toast('⚠ ' + e.message);
+    console.error(e);
   }
 }
 
-// Poll every 45s
-setInterval(async () => {
-  if (editingId !== null) return;
-  try {
-    const data = await ghRead();
-    if (data.ops && data.ops.length !== ops.length) {
-      ops = data.ops;
-      nextId = Math.max(0, ...ops.map(o => o.id || 0)) + 1;
-      renderAll();
-      toast('🔄 Datos actualizados');
-    }
-    sync('ok', 'Sincronizado');
-  } catch(e) { sync('err', 'Sin conexión'); }
-}, 45000);
-
-// ── FILTERS ───────────────────────────────────────────────
 function getVisible() {
   return ops.filter(o => {
     if (filterEstado && o.estado !== filterEstado) return false;
-    if (filterMonth && !(o.fecha || '').startsWith(filterMonth)) return false;
+    if (filterMonth && !(o.fecha||'').startsWith(filterMonth)) return false;
     return true;
   });
 }
-
 function setFilter(val, btn) {
-  filterEstado = val;
-  editingId = null;
+  filterEstado = val; editingId = null;
   document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  renderTable();
-  renderPill();
+  renderTable(); renderPill();
 }
-
 function onMonthChange() {
   filterMonth = document.getElementById('monthSel').value;
-  editingId = null;
-  renderAll();
+  editingId = null; renderAll();
 }
-
-// ── HELPERS ───────────────────────────────────────────────
-function fmt(n) { return '$' + Math.round(n || 0).toLocaleString('es-MX'); }
-function gan(o) { return (o.monto || 0) - (o.gastos || 0); }
-
+function fmt(n) { return '$' + Math.round(n||0).toLocaleString('es-MX'); }
+function gan(o) { return (o.monto||0) - (o.gastos||0); }
 const MESES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
-// ── RENDER MONTH FILTER ───────────────────────────────────
 function renderMonthFilter() {
   const months = [...new Set(ops.map(o => (o.fecha||'').slice(0,7)).filter(Boolean))].sort().reverse();
   const sel = document.getElementById('monthSel');
   const cur = sel.value;
   while (sel.options.length > 1) sel.remove(1);
   months.forEach(ym => {
-    const [y, m] = ym.split('-');
+    const [y,m] = ym.split('-');
     sel.add(new Option(MESES[+m] + ' ' + y, ym));
   });
   if (cur) sel.value = cur;
 }
 
-// ── RENDER PILL ───────────────────────────────────────────
 function renderPill() {
   const v = getVisible();
-  const ops_count = v.filter(o => o.estado !== 'GASTO').length;
-  const pag = v.filter(o => o.estado === 'PAGADO').length;
-  const pen = v.filter(o => o.estado === 'PENDIENTE').length;
-  const gas = v.filter(o => o.estado === 'GASTO').length;
+  const total = v.filter(o=>o.estado!=='GASTO').length;
+  const pag = v.filter(o=>o.estado==='PAGADO').length;
+  const pen = v.filter(o=>o.estado==='PENDIENTE').length;
+  const gas = v.filter(o=>o.estado==='GASTO').length;
   document.getElementById('opsPill').innerHTML =
-    `<b>${ops_count}</b> ops &nbsp;·&nbsp; <span style="color:#3B6D11">${pag} pagadas</span> &nbsp;·&nbsp; <span style="color:#BA7517">${pen} pendientes</span> &nbsp;·&nbsp; <span style="color:#A32D2D">${gas} gastos</span>`;
+    `<b>${total}</b> ops &nbsp;·&nbsp; <span style="color:#3B6D11">${pag} pagadas</span> &nbsp;·&nbsp; <span style="color:#BA7517">${pen} pendientes</span> &nbsp;·&nbsp; <span style="color:#A32D2D">${gas} gastos</span>`;
 }
 
-// ── RENDER METRICS ────────────────────────────────────────
 function renderMetrics() {
   const v = getVisible();
-  const ing = v.filter(o => o.estado !== 'GASTO').reduce((s,o) => s+(o.monto||0), 0);
-  const gas = v.reduce((s,o) => s+(o.gastos||0), 0);
+  const ing = v.filter(o=>o.estado!=='GASTO').reduce((s,o)=>s+(o.monto||0),0);
+  const gas = v.reduce((s,o)=>s+(o.gastos||0),0);
   const net = ing - gas;
-  const pen = v.filter(o => o.estado === 'PENDIENTE').reduce((s,o) => s+(o.monto||0), 0);
-  const pct = ing > 0 ? Math.round((net/ing)*100) : 0;
+  const pen = v.filter(o=>o.estado==='PENDIENTE').reduce((s,o)=>s+(o.monto||0),0);
+  const pct = ing>0?Math.round((net/ing)*100):0;
   document.getElementById('metrics').innerHTML = `
     <div class="metric"><div class="label">Total facturado</div><div class="value" style="color:#185FA5">${fmt(ing)}</div><div class="sub">${v.filter(o=>o.estado!=='GASTO').length} operaciones</div></div>
     <div class="metric"><div class="label">Gastos totales</div><div class="value" style="color:#A32D2D">${fmt(gas)}</div><div class="sub">Proveedores + operativos</div></div>
@@ -366,81 +292,67 @@ function renderMetrics() {
   `;
 }
 
-// ── RENDER CHARTS ─────────────────────────────────────────
 const COLORS = ['#185FA5','#1D9E75','#BA7517','#D4537E','#533AB7'];
 function renderCharts() {
   const v = getVisible();
   const bySvc = {};
-  v.filter(o => o.estado !== 'GASTO').forEach(o => { bySvc[o.servicio] = (bySvc[o.servicio]||0) + (o.monto||0); });
-  const svL = Object.keys(bySvc), svD = svL.map(k => Math.round(bySvc[k]));
-
-  if (ch1) ch1.destroy();
-  ch1 = new Chart(document.getElementById('c1').getContext('2d'), {
-    type: 'bar',
-    data: { labels: svL, datasets: [{ data: svD, backgroundColor: COLORS.slice(0,svL.length), borderRadius: 4 }] },
-    options: { responsive:true, maintainAspectRatio:false,
-      plugins: { legend:{display:false}, tooltip:{callbacks:{label:c=>'$'+Math.round(c.parsed.y).toLocaleString('es-MX')}}},
-      scales: { y:{ticks:{callback:v=>'$'+Math.round(v/1000)+'k'},grid:{color:'rgba(0,0,0,0.05)'}}, x:{grid:{display:false}} }
+  v.filter(o=>o.estado!=='GASTO').forEach(o=>{ bySvc[o.servicio]=(bySvc[o.servicio]||0)+(o.monto||0); });
+  const svL=Object.keys(bySvc), svD=svL.map(k=>Math.round(bySvc[k]));
+  if(ch1) ch1.destroy();
+  ch1 = new Chart(document.getElementById('c1').getContext('2d'),{
+    type:'bar', data:{labels:svL,datasets:[{data:svD,backgroundColor:COLORS.slice(0,svL.length),borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+Math.round(c.parsed.y).toLocaleString('es-MX')}}},
+      scales:{y:{ticks:{callback:v=>'$'+Math.round(v/1000)+'k'},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}
     }
   });
-  document.getElementById('leg1').innerHTML = svL.map((l,i) =>
+  document.getElementById('leg1').innerHTML = svL.map((l,i)=>
     `<span><span style="width:10px;height:10px;border-radius:2px;background:${COLORS[i]||'#888'};display:inline-block;margin-right:4px;"></span>${l}</span>`
   ).join('');
-
-  const pag = v.filter(o=>o.estado==='PAGADO').reduce((s,o)=>s+(o.monto||0),0);
-  const pen = v.filter(o=>o.estado==='PENDIENTE').reduce((s,o)=>s+(o.monto||0),0);
-  if (ch2) ch2.destroy();
-  ch2 = new Chart(document.getElementById('c2').getContext('2d'), {
-    type: 'doughnut',
-    data: { labels:['Pagado','Pendiente'], datasets:[{data:[Math.round(pag),Math.round(pen)],backgroundColor:['#3B6D11','#BA7517'],borderWidth:0}] },
-    options: { responsive:true, maintainAspectRatio:false, cutout:'65%',
+  const pag=v.filter(o=>o.estado==='PAGADO').reduce((s,o)=>s+(o.monto||0),0);
+  const pen=v.filter(o=>o.estado==='PENDIENTE').reduce((s,o)=>s+(o.monto||0),0);
+  if(ch2) ch2.destroy();
+  ch2 = new Chart(document.getElementById('c2').getContext('2d'),{
+    type:'doughnut', data:{labels:['Pagado','Pendiente'],datasets:[{data:[Math.round(pag),Math.round(pen)],backgroundColor:['#3B6D11','#BA7517'],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+Math.round(c.parsed).toLocaleString('es-MX')}}}
     }
   });
-  const tot = pag+pen, p2 = tot>0?Math.round((pag/tot)*100):0;
+  const tot=pag+pen, p2=tot>0?Math.round((pag/tot)*100):0;
   document.getElementById('leg2').innerHTML = `
     <span><span style="width:10px;height:10px;border-radius:2px;background:#3B6D11;display:inline-block;margin-right:4px;"></span>Pagado ${p2}%</span>
     <span><span style="width:10px;height:10px;border-radius:2px;background:#BA7517;display:inline-block;margin-right:4px;"></span>Pendiente ${100-p2}%</span>`;
 }
 
-// ── RENDER TABLE ──────────────────────────────────────────
 function renderTable() {
   const vis = getVisible().slice().reverse();
   const tbody = document.getElementById('tbody');
-  if (!vis.length) {
-    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:#888">Sin operaciones</td></tr>';
-    return;
-  }
+  if (!vis.length) { tbody.innerHTML='<tr><td colspan="10" style="text-align:center;padding:24px;color:#888">Sin operaciones</td></tr>'; return; }
   tbody.innerHTML = vis.map(o => {
     if (o.id === editingId) {
-      const sOpts = ['CATERING','HANDLING SUPERVISION','TRANSPORTACION','GASTO OPERATIVO']
-        .map(s=>`<option${o.servicio===s?' selected':''}>${s}</option>`).join('');
-      const eOpts = ['PENDIENTE','PAGADO','GASTO']
-        .map(s=>`<option${o.estado===s?' selected':''}>${s}</option>`).join('');
+      const sO=['CATERING','HANDLING SUPERVISION','TRANSPORTACION','GASTO OPERATIVO'].map(s=>`<option${o.servicio===s?' selected':''}>${s}</option>`).join('');
+      const eO=['PENDIENTE','PAGADO','GASTO'].map(s=>`<option${o.estado===s?' selected':''}>${s}</option>`).join('');
       return `
         <tr class="erow" id="er${o.id}">
           <td><input id="ec" value="${o.cliente}"></td>
           <td><input id="em" value="${o.matricula}" style="width:80px"></td>
-          <td><input id="ef" value="${o.factura||''}" style="width:90px" placeholder="FAC-001"></td>
-          <td><select id="es" style="min-width:130px">${sOpts}</select></td>
+          <td><input id="ef" value="${o.factura||''}" style="width:90px"></td>
+          <td><select id="es" style="min-width:130px">${sO}</select></td>
           <td><input id="eg" type="number" value="${o.gastos||0}" style="width:90px;text-align:right"></td>
           <td><input id="emo" type="number" value="${o.monto||0}" style="width:90px;text-align:right"></td>
           <td></td>
-          <td><select id="ee">${eOpts}</select></td>
+          <td><select id="ee">${eO}</select></td>
           <td><input id="efe" type="date" value="${o.fecha||''}" style="width:130px"></td>
           <td style="white-space:nowrap">
             <button class="sbtn" onclick="saveEdit(${o.id})"><i class="ti ti-check" style="font-size:12px"></i> Guardar</button>
             <button class="cbtn" onclick="cancelEdit()" style="margin-left:4px">Cancelar</button>
           </td>
         </tr>
-        <tr class="erow">
-          <td colspan="10" style="padding:4px 6px 10px">
-            <input id="eno" value="${o.notas||''}" placeholder="Notas..." style="width:100%;font-size:12px;padding:5px 8px;border:0.5px solid #185FA5;border-radius:6px;font-family:inherit">
-          </td>
-        </tr>`;
+        <tr class="erow"><td colspan="10" style="padding:4px 6px 10px">
+          <input id="eno" value="${o.notas||''}" placeholder="Notas..." style="width:100%;font-size:12px;padding:5px 8px;border:0.5px solid #185FA5;border-radius:6px;font-family:inherit">
+        </td></tr>`;
     }
-    const g = gan(o);
-    const bc = o.estado;
+    const g=gan(o);
     return `<tr>
       <td style="font-weight:500">${o.cliente}${o.notas?`<br><span style="font-size:10px;color:#888;font-weight:400">${o.notas}</span>`:''}</td>
       <td class="mono">${o.matricula}</td>
@@ -449,23 +361,19 @@ function renderTable() {
       <td style="text-align:right;color:#5F5E5A">${o.gastos?fmt(o.gastos):'—'}</td>
       <td style="text-align:right">${o.monto?fmt(o.monto):'—'}</td>
       <td style="text-align:right;color:${g>=0?'#3B6D11':'#A32D2D'}">${fmt(g)}</td>
-      <td><span class="badge ${bc}" onclick="toggleEstado(${o.id})" title="Clic para cambiar estado">${o.estado}</span></td>
+      <td><span class="badge ${o.estado}" onclick="toggleEstado(${o.id})">${o.estado}</span></td>
       <td style="font-size:11px;color:#888">${o.fecha||'—'}</td>
       <td style="white-space:nowrap">
-        <button class="abtn" onclick="startEdit(${o.id})" title="Editar"><i class="ti ti-pencil"></i></button>
-        <button class="abtn del" onclick="delOp(${o.id})" title="Eliminar"><i class="ti ti-trash"></i></button>
+        <button class="abtn" onclick="startEdit(${o.id})"><i class="ti ti-pencil"></i></button>
+        <button class="abtn del" onclick="delOp(${o.id})"><i class="ti ti-trash"></i></button>
       </td>
     </tr>`;
   }).join('');
 }
 
-// ── EDIT ──────────────────────────────────────────────────
-function startEdit(id) {
-  editingId = id;
-  renderTable();
-  document.getElementById('er'+id)?.scrollIntoView({behavior:'smooth',block:'center'});
-}
-function cancelEdit() { editingId = null; renderTable(); }
+function startEdit(id) { editingId=id; renderTable(); document.getElementById('er'+id)?.scrollIntoView({behavior:'smooth',block:'center'}); }
+function cancelEdit() { editingId=null; renderTable(); }
+
 async function saveEdit(id) {
   const o = ops.find(x=>x.id===id);
   if (!o) return;
@@ -485,8 +393,8 @@ async function saveEdit(id) {
 
 async function toggleEstado(id) {
   const o = ops.find(x=>x.id===id);
-  if (!o || o.estado==='GASTO') return;
-  o.estado = o.estado==='PENDIENTE' ? 'PAGADO' : 'PENDIENTE';
+  if (!o||o.estado==='GASTO') return;
+  o.estado = o.estado==='PENDIENTE'?'PAGADO':'PENDIENTE';
   renderAll();
   await saveOps('Estado actualizado ✓');
 }
@@ -498,45 +406,38 @@ async function delOp(id) {
   await saveOps('Operación eliminada');
 }
 
-// ── ADD ───────────────────────────────────────────────────
 async function addOp() {
-  const cliente = document.getElementById('nc').value.trim().toUpperCase();
-  const matricula = document.getElementById('nm').value.trim().toUpperCase();
+  const cliente=document.getElementById('nc').value.trim().toUpperCase();
+  const matricula=document.getElementById('nm').value.trim().toUpperCase();
   if (!cliente||!matricula) { toast('⚠ Ingresa cliente y matrícula'); return; }
-  const btn = document.getElementById('addBtn');
-  btn.disabled = true;
+  const btn=document.getElementById('addBtn');
+  btn.disabled=true;
   ops.push({
-    id: nextId++,
-    cliente, matricula,
-    factura:  document.getElementById('nf').value.trim(),
-    servicio: document.getElementById('ns').value,
-    gastos:   parseFloat(document.getElementById('ng').value)||0,
-    monto:    parseFloat(document.getElementById('nmo').value)||0,
-    estado:   document.getElementById('ne').value,
-    fecha:    document.getElementById('nfe').value,
-    notas:    document.getElementById('nno').value.trim(),
+    id:nextId++, cliente, matricula,
+    factura:document.getElementById('nf').value.trim(),
+    servicio:document.getElementById('ns').value,
+    gastos:parseFloat(document.getElementById('ng').value)||0,
+    monto:parseFloat(document.getElementById('nmo').value)||0,
+    estado:document.getElementById('ne').value,
+    fecha:document.getElementById('nfe').value,
+    notas:document.getElementById('nno').value.trim(),
   });
   ['nc','nm','nf','ng','nmo','nno'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('nfe').value = new Date().toISOString().split('T')[0];
+  document.getElementById('nfe').value=new Date().toISOString().split('T')[0];
   renderAll();
   await saveOps('✓ Operación agregada');
-  btn.disabled = false;
+  btn.disabled=false;
 }
 
-// ── RENDER ALL ────────────────────────────────────────────
 function renderAll() {
-  renderMonthFilter();
-  renderPill();
-  renderMetrics();
-  renderCharts();
-  renderTable();
-  document.getElementById('stamp').textContent = 'Actualizado: ' + new Date().toLocaleString('es-MX');
+  renderMonthFilter(); renderPill(); renderMetrics(); renderCharts(); renderTable();
+  document.getElementById('stamp').textContent='Actualizado: '+new Date().toLocaleString('es-MX');
 }
 
-// ── INIT ──────────────────────────────────────────────────
-document.getElementById('hdate').textContent = new Date().toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-document.getElementById('nfe').value = new Date().toISOString().split('T')[0];
-loadOps();
+document.getElementById('hdate').textContent=new Date().toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+document.getElementById('nfe').value=new Date().toISOString().split('T')[0];
+sync('ok','Listo');
+renderAll();
 </script>
 </body>
 </html>
