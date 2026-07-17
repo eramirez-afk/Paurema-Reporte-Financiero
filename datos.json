@@ -380,7 +380,7 @@
       "servicio": "CATERING",
       "gastos": 14480,
       "monto": 26092,
-      "estado": "PAGADO",
+      "estado": "PENDIENTE",
       "fecha": "2026-06-15",
       "notas": ""
     },
