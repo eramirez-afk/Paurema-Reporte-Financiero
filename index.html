@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pauream Ã¢ÂÂ Reporte Ejecutivo</title>
+<title>Pauream ÃÂ¢ÃÂÃÂ Reporte Ejecutivo</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -79,7 +79,7 @@ tr:hover td{background:#f9f9f7;}
 <body>
 <div class="container">
 <div class="header">
-  <h1><i class="ti ti-plane"></i>Pauream Ã¢ÂÂ Reporte Ejecutivo</h1>
+  <h1><i class="ti ti-plane"></i>Pauream ÃÂ¢ÃÂÃÂ Reporte Ejecutivo</h1>
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
     <span style="font-size:12px;color:#5F5E5A;" id="hdate"></span>
     <div class="sync-badge"><span class="sync-dot" id="sdot"></span><span id="stxt">Listo</span></div>
@@ -89,7 +89,7 @@ tr:hover td{background:#f9f9f7;}
 <div class="topbar">
   <label><i class="ti ti-calendar" style="font-size:12px;vertical-align:-1px;margin-right:3px;"></i>Mes:</label>
   <select class="month-sel" id="monthSel" onchange="onMonthChange()"><option value="">Todos</option></select>
-  <div class="ops-pill" id="opsPill">Ã¢ÂÂ</div>
+  <div class="ops-pill" id="opsPill">ÃÂ¢ÃÂÃÂ</div>
 </div>
 
 <div class="metrics" id="metrics"></div>
@@ -116,12 +116,12 @@ tr:hover td{background:#f9f9f7;}
     <button class="fbtn" onclick="setFilter('GASTO',this)">Gastos</button>
   </div>
 </div>
-<p class="tip">Clic en Ã¢ÂÂÃ¯Â¸Â para editar ÃÂ· Clic en el badge de estado para cambiar rÃÂ¡pido</p>
+<p class="tip">Clic en ÃÂ¢ÃÂÃÂÃÂ¯ÃÂ¸ÃÂ para editar ÃÂÃÂ· Clic en el badge de estado para cambiar rÃÂÃÂ¡pido</p>
 
 <div class="table-wrap">
   <table>
     <thead><tr>
-      <th>Cliente</th><th>MatrÃÂ­cula</th><th>Factura</th><th>Servicio</th>
+      <th>Cliente</th><th>MatrÃÂÃÂ­cula</th><th>Factura</th><th>Servicio</th>
       <th style="text-align:right">Gastos</th><th style="text-align:right">Monto</th>
       <th style="text-align:right">Ganancia</th><th>Estado</th><th>Fecha</th><th></th>
     </tr></thead>
@@ -130,16 +130,16 @@ tr:hover td{background:#f9f9f7;}
 </div>
 
 <div class="add-form">
-  <div class="form-title"><i class="ti ti-plus"></i>Nueva operaciÃÂ³n</div>
+  <div class="form-title"><i class="ti ti-plus"></i>Nueva operaciÃÂÃÂ³n</div>
   <div class="form-grid">
     <div class="fg"><label>Cliente</label><input id="nc" placeholder="Cliente"></div>
-    <div class="fg"><label>MatrÃÂ­cula</label><input id="nm" placeholder="Ej. N718JJ"></div>
+    <div class="fg"><label>MatrÃÂÃÂ­cula</label><input id="nm" placeholder="Ej. N718JJ"></div>
     <div class="fg"><label>No. Factura</label><input id="nf" placeholder="FAC-001"></div>
     <div class="fg"><label>Servicio</label>
       <select id="ns">
         <option value="CATERING">Catering</option>
         <option value="HANDLING SUPERVISION">Handling Supervision</option>
-        <option value="TRANSPORTACION">TransportaciÃÂ³n</option>
+        <option value="TRANSPORTACION">TransportaciÃÂÃÂ³n</option>
         <option value="GASTO OPERATIVO">Gasto Operativo</option>
       </select>
     </div>
@@ -152,7 +152,7 @@ tr:hover td{background:#f9f9f7;}
     <div class="fg"><label>Notas</label><input id="nno" placeholder="Opcional"></div>
   </div>
   <button class="btn-add" id="addBtn" onclick="addOp()">
-    <i class="ti ti-check" style="font-size:13px;margin-right:4px;vertical-align:-1px;"></i>Agregar operaciÃÂ³n
+    <i class="ti ti-check" style="font-size:13px;margin-right:4px;vertical-align:-1px;"></i>Agregar operaciÃÂÃÂ³n
   </button>
 </div>
 <div class="stamp" id="stamp"></div>
@@ -224,12 +224,12 @@ async function saveOps(msg) {
       throw new Error(putResp.status + ': ' + (err.message||''));
     }
 
-    sync('ok', 'Ã¢ÂÂ Guardado');
+    sync('ok', 'ÃÂ¢ÃÂÃÂ Guardado');
     setTimeout(() => sync('ok', 'Sincronizado'), 3000);
     if (msg) toast(msg);
   } catch(e) {
     sync('err', 'Error: ' + e.message);
-    toast('Ã¢ÂÂ  ' + e.message);
+    toast('ÃÂ¢ÃÂÃÂ  ' + e.message);
     console.error(e);
   }
 }
@@ -274,7 +274,7 @@ function renderPill() {
   const pen = v.filter(o=>o.estado==='PENDIENTE').length;
   const gas = v.filter(o=>o.estado==='GASTO').length;
   document.getElementById('opsPill').innerHTML =
-    `<b>${total}</b> ops &nbsp;ÃÂ·&nbsp; <span style="color:#3B6D11">${pag} pagadas</span> &nbsp;ÃÂ·&nbsp; <span style="color:#BA7517">${pen} pendientes</span> &nbsp;ÃÂ·&nbsp; <span style="color:#A32D2D">${gas} gastos</span>`;
+    `<b>${total}</b> ops &nbsp;ÃÂÃÂ·&nbsp; <span style="color:#3B6D11">${pag} pagadas</span> &nbsp;ÃÂÃÂ·&nbsp; <span style="color:#BA7517">${pen} pendientes</span> &nbsp;ÃÂÃÂ·&nbsp; <span style="color:#A32D2D">${gas} gastos</span>`;
 }
 
 function renderMetrics() {
@@ -356,13 +356,13 @@ function renderTable() {
     return `<tr>
       <td style="font-weight:500">${o.cliente}${o.notas?`<br><span style="font-size:10px;color:#888;font-weight:400">${o.notas}</span>`:''}</td>
       <td class="mono">${o.matricula}</td>
-      <td style="font-size:11px;color:#5F5E5A">${o.factura||'Ã¢ÂÂ'}</td>
+      <td style="font-size:11px;color:#5F5E5A">${o.factura||'ÃÂ¢ÃÂÃÂ'}</td>
       <td>${o.servicio}</td>
-      <td style="text-align:right;color:#5F5E5A">${o.gastos?fmt(o.gastos):'Ã¢ÂÂ'}</td>
-      <td style="text-align:right">${o.monto?fmt(o.monto):'Ã¢ÂÂ'}</td>
+      <td style="text-align:right;color:#5F5E5A">${o.gastos?fmt(o.gastos):'ÃÂ¢ÃÂÃÂ'}</td>
+      <td style="text-align:right">${o.monto?fmt(o.monto):'ÃÂ¢ÃÂÃÂ'}</td>
       <td style="text-align:right;color:${g>=0?'#3B6D11':'#A32D2D'}">${fmt(g)}</td>
       <td><span class="badge ${o.estado}" onclick="toggleEstado(${o.id})">${o.estado}</span></td>
-      <td style="font-size:11px;color:#888">${o.fecha||'Ã¢ÂÂ'}</td>
+      <td style="font-size:11px;color:#888">${o.fecha||'ÃÂ¢ÃÂÃÂ'}</td>
       <td style="white-space:nowrap">
         <button class="abtn" onclick="startEdit(${o.id})"><i class="ti ti-pencil"></i></button>
         <button class="abtn del" onclick="delOp(${o.id})"><i class="ti ti-trash"></i></button>
@@ -388,7 +388,7 @@ async function saveEdit(id) {
   o.notas     = document.getElementById('eno').value.trim();
   editingId   = null;
   renderAll();
-  await saveOps('Ã¢ÂÂ OperaciÃÂ³n actualizada');
+  await saveOps('ÃÂ¢ÃÂÃÂ OperaciÃÂÃÂ³n actualizada');
 }
 
 async function toggleEstado(id) {
@@ -396,20 +396,20 @@ async function toggleEstado(id) {
   if (!o||o.estado==='GASTO') return;
   o.estado = o.estado==='PENDIENTE'?'PAGADO':'PENDIENTE';
   renderAll();
-  await saveOps('Estado actualizado Ã¢ÂÂ');
+  await saveOps('Estado actualizado ÃÂ¢ÃÂÃÂ');
 }
 
 async function delOp(id) {
-  if (!confirm('ÃÂ¿Eliminar esta operaciÃÂ³n?')) return;
+  if (!confirm('ÃÂÃÂ¿Eliminar esta operaciÃÂÃÂ³n?')) return;
   ops = ops.filter(o=>o.id!==id);
   renderAll();
-  await saveOps('OperaciÃÂ³n eliminada');
+  await saveOps('OperaciÃÂÃÂ³n eliminada');
 }
 
 async function addOp() {
   const cliente=document.getElementById('nc').value.trim().toUpperCase();
   const matricula=document.getElementById('nm').value.trim().toUpperCase();
-  if (!cliente||!matricula) { toast('Ã¢ÂÂ  Ingresa cliente y matrÃÂ­cula'); return; }
+  if (!cliente||!matricula) { toast('ÃÂ¢ÃÂÃÂ  Ingresa cliente y matrÃÂÃÂ­cula'); return; }
   const btn=document.getElementById('addBtn');
   btn.disabled=true;
   ops.push({
@@ -425,7 +425,7 @@ async function addOp() {
   ['nc','nm','nf','ng','nmo','nno'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('nfe').value=new Date().toISOString().split('T')[0];
   renderAll();
-  await saveOps('Ã¢ÂÂ OperaciÃÂ³n agregada');
+  await saveOps('ÃÂ¢ÃÂÃÂ OperaciÃÂÃÂ³n agregada');
   btn.disabled=false;
 }
 
